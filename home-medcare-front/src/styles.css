@@ -1,0 +1,263 @@
+.App {
+  background: linear-gradient(#008080, #94dfdfff);    
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: left;
+  background-color: linear-gradient(#008080, #94dfdfff);    
+}
+
+.title {
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 35px;
+  font-weight: bold;
+  animation: flipTitle 2s;
+}
+
+@keyframes flipTitle {
+  from {
+    transform: rotateX(90deg);
+  }
+  to {
+    transform: rotateX(0deg);
+  }
+}
+
+/* Navbar container */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 20px;
+  position: relative;
+  color: white;
+}
+
+/* Botão do menu (hambúrguer / fechar) */
+.navbar > button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Lista de links (menu) */
+.navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  position: absolute;
+  top: 60px;   /* logo abaixo da navbar */
+  left: 10px;  /* encostado no lado esquerdo */
+  background-color: #00a5a5;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease;
+  z-index: 100;
+}
+
+/* Animação suave ao abrir */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilo dos botões do menu */
+.navbar ul li button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.navbar ul li button:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+  .navbar ul {
+    position: static;
+    flex-direction: row;
+    background: none;
+    box-shadow: none;
+    gap: 20px;
+    padding: 0;
+    animation: slideLeft 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    margin: 0;
+    padding: 10px;
+    top: 60px;
+    left: 10px;
+    background-color: #00a5a5;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    min-width: 180px;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .navbar ul li button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .navbar ul li button:hover {
+    background: rgba(255,255,255,0.4);
+  }
+
+  .navbar button {
+    width: 5%;
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar button:hover {
+    background: rgba(255,255,255,0.4);
+  }
+}
+
+.profissionais {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profissionais button {
+  width: 100px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  text-items: left;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  animation: slideLeft 0.3s ease;
+}
+
+.profissionais button:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.profissionais table {
+  flex-direction: row;
+  background: none;
+  box-shadow: none;
+  gap: 20px;
+  padding: 0;
+  animation: slideLeft 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  margin: 10px;
+  padding: 10px;
+  background-color: #00a5a5;
+  border-radius: 8px;
+  min-width: 180px;
+  text-align: center;
+  color: white;
+}
+
+.profissionais table th, .profissionais table td {
+  border-bottom: 1px solid #dddddd82;
+}
+
+.form-profissional {
+  flex-direction: row;
+  background: none;
+  box-shadow: none;
+  gap: 20px;
+  padding: 0;
+  animation: slideDown 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  margin: 10px;
+  padding: 10px;
+  background-color: #00a5a5;
+  border-radius: 8px;
+  min-width: 180px;
+  text-align: center;
+  color: white;
+}
+
+.form-profissional input, .form-profissional select {
+  padding: 8px;
+  margin: 5px;
+  border: white 1px solid;
+  color: white;
+  border-radius: 4px;
+  width: 200px;
+  background: #dddddd82;
+}
+
+.fiEdit3 a {
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.fiEdit3:hover {
+  background: #dddddd82;
+}
+
+.fiTrash a {
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.fiTrash:hover {
+  background: #dddddd82;
+}
