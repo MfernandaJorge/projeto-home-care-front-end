@@ -1,5 +1,5 @@
 .App {
-  background: linear-gradient(#008080, #94dfdfff);    
+  background: linear-gradient(#94dfdfff, #008080);    
 }
 
 .container {
@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: left;
   justify-content: left;
-  background-color: linear-gradient(#008080, #94dfdfff);    
+  background-color: linear-gradient(#94dfdfff, #008080);    
 }
 
 .title {
@@ -170,13 +170,13 @@
   }
 }
 
-.profissionais {
+.pagina-padrao {
   padding: 20px;
   display: flex;
   flex-direction: column;
 }
 
-.profissionais button {
+.pagina-padrao button {
   width: 100px;
   background: none;
   border: none;
@@ -190,11 +190,11 @@
   animation: slideLeft 0.3s ease;
 }
 
-.profissionais button:hover {
+.pagina-padrao button:hover {
   background: rgba(255,255,255,0.2);
 }
 
-.profissionais table {
+.table-padrao {
   flex-direction: row;
   background: none;
   box-shadow: none;
@@ -211,11 +211,37 @@
   color: white;
 }
 
-.profissionais table th, .profissionais table td {
-  border-bottom: 1px solid #dddddd82;
+.table-padrao table{
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.form-profissional {
+.table-padrao h3 {
+  text-align: center;
+  color: white;
+  padding: 12px 15px;
+  border-collapse: collapse;
+  font-size: 24px;
+}
+
+.table-padrao table th {
+  border-bottom: 1px solid #dddddd82;
+  padding: 12px 15px;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #dddddd82;
+}
+
+.table-padrao table td {
+  border-bottom: 1px solid #dddddd82;
+  padding: 12px 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-padrao {
   flex-direction: row;
   background: none;
   box-shadow: none;
@@ -232,7 +258,7 @@
   color: white;
 }
 
-.form-profissional input, .form-profissional select {
+.form-padrao input, .form-padrao select {
   padding: 8px;
   margin: 5px;
   border: white 1px solid;
