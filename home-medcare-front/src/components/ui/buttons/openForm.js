@@ -5,11 +5,13 @@
 import { useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi";
 
-const OpenForm = () => {
+const OpenForm = ({ onToggle }) => {
+  
   const [formPadrao, setFormPadrao] = useState(false);
 
   function handleToggleForm() {
     setFormPadrao(!formPadrao);
+    onToggle(!formPadrao); 
   }
 
   return (

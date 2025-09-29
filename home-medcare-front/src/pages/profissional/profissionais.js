@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import api from "../../services/api";
 
 const ProfissionaisPage = () => {
+  const [formPadrao, setFormPadrao] = useState(false);
 
   const [formData, setFormData] = useState(
     profissionalFields.reduce((acc, field) => {
@@ -42,25 +43,27 @@ const ProfissionaisPage = () => {
 
   return (
     <div className="pagina-padrao">
-      <OpenForm />
+      <OpenForm onToggle={setFormPadrao} />
 
-      <div className="form-padrao">
-        <h3>Cadastrar Profissional</h3>
+        {formPadrao && ( 
+          <div className="form-padrao">
+          <h3>Cadastrar Profissional</h3>
 
-        <form onSubmit={handleSubmit}>
-          {profissionalFields.map((field) => (
-            <input
-              key={field.id}
-              type={field.type}
-              name={field.id}
-              placeholder={field.placeholder}
-              value={formData[field.id]}
-              onChange={handleChange}
-            />
-          ))}
-          <button type="submit">Salvar</button>
-        </form>
-      </div>
+            <form onSubmit={handleSubmit}>
+              {profissionalFields.map((field) => (
+                <input
+                  key={field.id}
+                  type={field.type}
+                  name={field.id}
+                  placeholder={field.placeholder}
+                  value={formData[field.id]}
+                  onChange={handleChange}
+                />
+              ))}
+              <button type="submit">Salvar</button>
+            </form>
+          </div>
+        )}
 
       <div className="table-padrao">
         <h3>Profissionais</h3>

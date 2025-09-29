@@ -9,6 +9,8 @@ import { useState,useEffect } from "react";
 import api from "../../services/api";
 
 const AgendaPage = () => {
+  const [formPadrao, setFormPadrao] = useState(false);
+
   const [formData, setFormData] = useState(
     agendaFields.reduce((acc, field) => {
       acc[field.id] = "";
@@ -39,25 +41,27 @@ const AgendaPage = () => {
 
   return (
     <div className="pagina-padrao">
-      < OpenForm  />
+      <OpenForm onToggle={setFormPadrao} />
 
-      <div className="form-padrao"> 
-        <h3>Agendar Atendimento</h3> 
+        {formPadrao && (
+          <div className="form-padrao"> 
+            <h3>Agendar Atendimento</h3> 
 
-        <form onSubmit={handleSubmit}>
-          {agendaFields.map((field) => (
-            <input
-              key={field.id}
-              type={field.type}
-              name={field.id}
-              placeholder={field.placeholder}
-              value={formData[field.id]}
-              onChange={handleChange}
-            />
-          ))}
-          <button type="submit">Salvar</button>
-        </form>
-      </div>
+            <form onSubmit={handleSubmit}>
+              {agendaFields.map((field) => (
+                <input
+                  key={field.id}
+                  type={field.type}
+                  name={field.id}
+                  placeholder={field.placeholder}
+                  value={formData[field.id]}
+                  onChange={handleChange}
+                />
+              ))}
+              <button type="submit">Salvar</button>
+            </form>
+          </div>
+        )}
 
       <div className="table-padrao">
         <h3>Atendimentos Agendados</h3>

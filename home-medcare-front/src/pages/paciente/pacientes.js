@@ -10,6 +10,8 @@ import { useState,useEffect } from "react";
 import api from "../../services/api";
 
 const PacientesPage = () => {
+  const [formPadrao, setFormPadrao] = useState(false);
+
   const [formData, setFormData] = useState(
     pacienteFields.reduce((acc, field) => {
       acc[field.id] = "";
@@ -41,25 +43,27 @@ const PacientesPage = () => {
 
   return (
     <div className="pagina-padrao">
-      <OpenForm />
+      <OpenForm onToggle={setFormPadrao} />
 
-      <div className="form-padrao">
-        <h3>Cadastrar Paciente</h3>
+        {formPadrao && (
+          <div className="form-padrao">
+            <h3>Cadastrar Paciente</h3>
 
-        <form onSubmit={handleSubmit}>
-          {pacienteFields.map((field) => (
-            <input
-              key={field.id}
-              type={field.type}
-              name={field.id}
-              placeholder={field.placeholder}
-              value={formData[field.id]}
-              onChange={handleChange}
-            />
-          ))}
-          <button type="submit">Salvar</button>
-        </form>
-      </div>
+              <form onSubmit={handleSubmit}>
+                {pacienteFields.map((field) => (
+                  <input
+                    key={field.id}
+                    type={field.type}
+                    name={field.id}
+                    placeholder={field.placeholder}
+                    value={formData[field.id]}
+                    onChange={handleChange}
+                  />
+                ))}
+                <button type="submit">Salvar</button>
+              </form>
+          </div>
+        )}
 
       <div className="table-padrao">
         <h3>Pacientes</h3>
