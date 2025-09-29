@@ -1,66 +1,39 @@
 /**
- * Componente: Botão para salvar formulário.
+ * Componente: Botão para salvar formulário (genérico).
  */
 
-import { useState } from "react";
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiSave } from "react-icons/fi";
+import api from "../../../services/api"; // ajuste o path conforme sua estrutura
 
-const SaveForm = () => {
-  function handleSave(e) {
+const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
+  async function handleClick(e) {
     e.preventDefault();
 
-    if (!nome || !documento || !telefone || !ocupacao) {
-      alert("Por favor, preencha todos os campos.");
-      return;
+    try {
+      const response = await api.post(endpoint, data);
+      console.log("Salvo com sucesso:", response.data);
+
+      if (onSuccess) {
+        onSuccess(response.data);
+
+      } else {
+        alert("Registro salvo com sucesso!");
+      }
+
+    } catch (err) {
+      console.error("Erro ao salvar:", err);
+      if (onError) {
+        onError(err);
+
+      } else {
+        alert("Erro ao salvar. Tente novamente.");
+      }
     }
-
-    const endereco = {
-      logradouro,
-      bairro,
-      cidade,
-      estado,
-      cep,
-      numero: Number(numero)
-    }; 
-
-    const data = {
-      nome,
-      documento,
-      endereco,
-      ocupacao: Number (ocupacao),
-      telefone: Number(telefone),
-    };
-
-    api
-      .post("/profissional/cadastro", data)
-      .then(() => {
-        alert("Profissional cadastrado com sucesso!");
-        api
-          .get("/profissional/all")
-          .then((res) => setProfissionais(res.data));
-      })
-      .catch((err) => {
-        console.log("Erro ao salvar:", err)
-        alert("Erro ao salvar profissional. Tente novamente.");
-      });
-
-    // limpa campos do formulário
-    setNome("");
-    setDocumento("");
-    setEmail("");
-    setTelefone("");
-    setLogradouro("");
-    setBairro("");
-    setCidade("");
-    setEstado("");
-    setCep("");
-    setNumero("");
-    setOcupacao("");
   }
 
   return (
-    <button onClick={handleToggleForm}>
-      {formPadrao ? <FiX /> : <FiPlus />}
+    <button type="button" onClick={handleClick}>
+      <FiSave /> Salvar
     </button>
   );
 };
