@@ -1,5 +1,5 @@
 export const pacienteFields = [
-  { id: "id", type: "number", placeholder: "Código" },
+  // { id: "id", type: "number", placeholder: "Código" },
   { id: "nome", type: "text", placeholder: "Nome" },
   { id: "documento", type: "text", placeholder: "Documento" },
   { id: "email", type: "email", placeholder: "Email" },
