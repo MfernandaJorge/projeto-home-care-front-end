@@ -4,12 +4,21 @@
 
 import OpenForm from "../../components/ui/buttons/openForm";
 import Edit from "../../components/ui/buttons/edit";
+import Delete from "../../components/ui/buttons/delete";
+import SaveForm from "../../components/ui/buttons/saveForm";
+
 import { agendaFields } from "../../configs/fields/agendaFields";
 import { useState,useEffect } from "react";
+
 import api from "../../services/api";
 
 const AgendaPage = () => {
   const [formPadrao, setFormPadrao] = useState(false);
+
+  const initialForm = agendaFields.reduce((acc, field) => {
+      acc[field.id] = "";
+      return acc;
+    }, {});
 
   const [formData, setFormData] = useState(
     agendaFields.reduce((acc, field) => {
@@ -25,11 +34,6 @@ const AgendaPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dados salvos:", formData);
-  };
-
   // lista de atendimentos agendados.
   const [agenda, setAgenda] = useState([]);
   useEffect(() => {
@@ -39,6 +43,14 @@ const AgendaPage = () => {
       .catch((err) => console.error("Erro ao carregar atendimentos agendados:", err));
   }, []);
 
+  // sucesso ao salvar
+  const handleSuccess = () => {
+    alert("Atendimento agendado com sucesso!");
+    setFormData(initialForm);
+    setFormPadrao(false);
+    api.get("/agenda/all").then((res) => setAgenda(res.data)); // recarrega lista
+  };
+
   return (
     <div className="pagina-padrao">
       <OpenForm onToggle={setFormPadrao} />
@@ -47,7 +59,7 @@ const AgendaPage = () => {
           <div className="form-padrao"> 
             <h3>Agendar Atendimento</h3> 
 
-            <form onSubmit={handleSubmit}>
+            <form>
               {agendaFields.map((field) => (
                 <input
                   key={field.id}
@@ -58,7 +70,19 @@ const AgendaPage = () => {
                   onChange={handleChange}
                 />
               ))}
-              <button type="submit">Salvar</button>
+
+              <SaveForm
+                endpoint="/agenda/novo-agendamento"
+                data={{
+                  ...formData,
+                  id_profissional: formData.id_profissional,
+                  data_agendamento: formData.data_agendamento,
+                  hora_agendamento: formData.hora_agendamento,
+                  receita_medica: formData.receita_medica,
+                  status_agendamento: formData.status_agendamento,
+                }}
+                onSuccess={handleSuccess}
+              />
             </form>
           </div>
         )}
@@ -88,7 +112,9 @@ const AgendaPage = () => {
                   <td>00:00</td>
                   <td>Paciente aguardando atendimento</td>
                   <td> < Edit /> </td>
-                  <td></td>
+                  <td>
+                    <Delete endpoint={`/agenda/delete/${p.id}`} />
+                  </td>
                 </tr>
               ))
             ) : (
