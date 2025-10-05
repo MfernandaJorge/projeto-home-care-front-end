@@ -3,14 +3,15 @@
  * Componente principal da aplicação React.
  * Gerencia o estado da aplicação, navegação entre páginas.
  */
-import { useState, useEffect } from "react";
-import { FiAlignJustify, FiMoreVertical, FiEdit3, FiTrash, FiPlus, FiX } from "react-icons/fi";
+import { useState } from "react";
+import { FiAlignJustify, FiMoreVertical } from "react-icons/fi";
 import "./styles/globals.css";
 
 // Import das páginas
 import AgendaPage from "./pages/agenda/agenda";
 import PacientesPage from "./pages/paciente/pacientes";
 import ProfissionaisPage from "./pages/profissional/profissionais";
+import AtendimentosPage from "./pages/atendimento/atendimento";
 
 function App() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -38,6 +39,7 @@ function App() {
               <li> <button onClick={() => setPagina("agenda")}>Agenda</button> </li>
               <li> <button onClick={() => setPagina("pacientes")}>Pacientes</button> </li>
               <li> <button onClick={() => setPagina("profissionais")}>Profissionais</button> </li>
+              <li> <button onClick={() => setPagina("novo-atendimento")}>Novos Atendimentos</button> </li>
               <li> <button onClick={() => setPagina("cadastro")}>Editar Cadastro</button> </li>
             </ul>
           )}
@@ -46,6 +48,7 @@ function App() {
         {pagina === "agenda" && ( < AgendaPage />  )}
         {pagina === "pacientes" && ( < PacientesPage />)}
         {pagina === "profissionais" && ( < ProfissionaisPage /> )}
+        {pagina === "novo-atendimento" && ( < AtendimentosPage /> )}
       </div>
     </div>
   );
