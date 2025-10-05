@@ -5,31 +5,28 @@
 import OpenForm from "../../components/ui/buttons/openForm";
 import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
+import SaveForm from "../../components/ui/buttons/saveForm";
+
 import { pacienteFields } from "../../configs/fields/pacienteFields";
 import { useState,useEffect } from "react";
+
 import api from "../../services/api";
 
 const PacientesPage = () => {
   const [formPadrao, setFormPadrao] = useState(false);
 
-  const [formData, setFormData] = useState(
-    pacienteFields.reduce((acc, field) => {
+  const initialForm = pacienteFields.reduce((acc, field) => {
       acc[field.id] = "";
       return acc;
-    }, {})
-  );
+  }, {});
+
+  const [formData, setFormData] = useState(initialForm);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dados salvos:", formData);
-    // aqui entra chamada para API ou serviço
   };
 
   // lista de pacientes
@@ -41,6 +38,13 @@ const PacientesPage = () => {
       .catch((err) => console.error("Erro ao carregar pacientes:", err));
   }, []);
 
+  const handleSuccess = () => {
+    alert("Paciente cadastrado com sucesso!");
+    setFormData(initialForm); // limpa o form
+    setFormPadrao(false); // fecha o form
+    api.get("/paciente/all").then((res) => setPaciente(res.data)); // recarrega lista
+  }
+
   return (
     <div className="pagina-padrao">
       <OpenForm onToggle={setFormPadrao} />
@@ -49,7 +53,7 @@ const PacientesPage = () => {
           <div className="form-padrao">
             <h3>Cadastrar Paciente</h3>
 
-              <form onSubmit={handleSubmit}>
+              <form>
                 {pacienteFields.map((field) => (
                   <input
                     key={field.id}
@@ -60,7 +64,29 @@ const PacientesPage = () => {
                     onChange={handleChange}
                   />
                 ))}
-                <button type="submit">Salvar</button>
+
+                {/* Botão que chama API de forma padrão */}
+                <SaveForm
+                  endpoint="/paciente/cadastro"
+                  data={{
+                    ...formData,
+                    nome: formData.nome,
+                    documento: formData.documento,
+                    email: formData.email,
+                    telefone: Number(formData.telefone),
+                    data_nascimento: formData.data_nascimento,
+                    distancia: Number(formData.distancia),
+                    endereco: {
+                      logradouro: formData.logradouro,
+                      bairro: formData.bairro,
+                      cidade: formData.cidade,
+                      estado: formData.estado,
+                      cep: formData.cep,
+                      numero: Number(formData.numero),
+                    },
+                  }}
+                  onSuccess={handleSuccess}
+                />
               </form>
           </div>
         )}
@@ -91,7 +117,9 @@ const PacientesPage = () => {
                   <td></td>
                   <td></td>
                   <td> < Edit /> </td>
-                  <td> < Delete /> </td>
+                  <td>
+                    <Delete endpoint={`/paciente/delete/${p.id}`} />
+                  </td>
                 </tr>
               ))
             ) : (

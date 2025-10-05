@@ -5,31 +5,28 @@
 import OpenForm from "../../components/ui/buttons/openForm";
 import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
+import SaveForm from "../../components/ui/buttons/saveForm";
 
 import { profissionalFields } from "../../configs/fields/profissionalFields";
 import { useState, useEffect } from "react";
+
 import api from "../../services/api";
 
 const ProfissionaisPage = () => {
   const [formPadrao, setFormPadrao] = useState(false);
 
-  const [formData, setFormData] = useState(
-    profissionalFields.reduce((acc, field) => {
-      acc[field.id] = "";
-      return acc;
-    }, {})
-  );
+  const initialForm = profissionalFields.reduce((acc, field) => {
+    acc[field.id] = "";
+    return acc;
+  }, {});
+
+  const [formData, setFormData] = useState(initialForm);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dados salvos:", formData);
   };
 
   // lista de profissionais
@@ -41,29 +38,56 @@ const ProfissionaisPage = () => {
       .catch((err) => console.error("Erro ao carregar profissionais:", err));
   }, []);
 
+  // sucesso ao salvar
+  const handleSuccess = () => {
+    alert("Profissional cadastrado com sucesso!");
+    setFormData(initialForm); // limpa o form
+    setFormPadrao(false); // fecha o form
+    api.get("/profissional/all").then((res) => setProfissionais(res.data)); // recarrega lista
+  };
+
   return (
     <div className="pagina-padrao">
       <OpenForm onToggle={setFormPadrao} />
 
-        {formPadrao && ( 
-          <div className="form-padrao">
+      {formPadrao && (
+        <div className="form-padrao">
           <h3>Cadastrar Profissional</h3>
+          <form>
+            {profissionalFields.map((field) => (
+              <input
+                key={field.id}
+                type={field.type}
+                name={field.id}
+                placeholder={field.placeholder}
+                value={formData[field.id]}
+                onChange={handleChange}
+              />
+            ))}
 
-            <form onSubmit={handleSubmit}>
-              {profissionalFields.map((field) => (
-                <input
-                  key={field.id}
-                  type={field.type}
-                  name={field.id}
-                  placeholder={field.placeholder}
-                  value={formData[field.id]}
-                  onChange={handleChange}
-                />
-              ))}
-              <button type="submit">Salvar</button>
-            </form>
-          </div>
-        )}
+            <SaveForm
+              endpoint="/profissional/cadastro"
+              data={{
+                ...formData,
+                nome: formData.nome,
+                documento: formData.documento,
+                email: formData.email,
+                telefone: Number(formData.telefone),
+                ocupacao: Number(formData.ocupacao),
+                endereco: {
+                  logradouro: formData.logradouro,
+                  bairro: formData.bairro,
+                  cidade: formData.cidade,
+                  estado: formData.estado,
+                  cep: formData.cep,
+                  numero: Number(formData.numero),
+                },
+              }}
+              onSuccess={handleSuccess}
+            />
+          </form>
+        </div>
+      )}
 
       <div className="table-padrao">
         <h3>Profissionais</h3>
@@ -93,8 +117,10 @@ const ProfissionaisPage = () => {
                     {p.endereco?.estado}, CEP {p.endereco?.cep}
                   </td>
                   <td>{p.ocupacao}</td>
-                  <td> < Edit /> </td>
-                  <td> < Delete /> </td>
+                  <td><Edit /></td>
+                  <td>
+                    <Delete endpoint={`/profissional/delete/${p.id}`} />
+                  </td>
                 </tr>
               ))
             ) : (
@@ -103,7 +129,7 @@ const ProfissionaisPage = () => {
               </tr>
             )}
           </tbody>
-          </table>
+        </table>
       </div>
     </div>
   );
