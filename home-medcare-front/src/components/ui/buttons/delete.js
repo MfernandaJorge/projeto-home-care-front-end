@@ -7,7 +7,7 @@
 import { FiTrash2 } from "react-icons/fi";
 import api from "../../../services/api";
 
-const Delete = ({ endpoint, onDelete, confirmMessage = "Tem certeza que deseja excluir este registro?" }) => {
+const Delete = ({ endpoint, onSuccess, onDelete, confirmMessage = "Tem certeza que deseja excluir este registro?" }) => {
   const handleDelete = async () => {
     if (!endpoint) {
       console.error("Delete: endpoint não informado.");
@@ -18,8 +18,15 @@ const Delete = ({ endpoint, onDelete, confirmMessage = "Tem certeza que deseja e
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      await api.delete(endpoint);
-      alert("Registro deletado com sucesso!");
+      const response = await api.delete(endpoint);
+
+      if (onSuccess) {
+        onSuccess(response.data);
+
+      } else {
+        alert("Registro deletado com sucesso!");
+      }
+
       if (onDelete) onDelete(); // executa callback se fornecida
     } catch (err) {
       console.error("Erro ao deletar:", err);

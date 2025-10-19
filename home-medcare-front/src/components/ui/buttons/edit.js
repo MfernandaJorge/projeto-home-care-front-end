@@ -2,37 +2,20 @@
  * Componente: Botão para edição de registros.
  */
 
+import { FiEdit } from "react-icons/fi";
 
-import { useState } from "react";
-import OpenForm from "./openForm";
-import { FiEdit3 } from "react-icons/fi";
-import api from "../../../services/api";
-
-const Edit = () => {
-  function hendleEdit(path, fields, id) {
-    < OpenForm />;
-
-  //   api
-  //     .get(path)
-  //     .then((res) => {
-  //       res.data.forEach((dados) => {
-  //         if (dados.id == id) {
-  //           console.log(fields);
-  //           setFields(dados);
-  //         }
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       console.log("Erro ao editar:", err);
-  //       alert("Erro ao editar profissional. Tente novamente.");
-  //     });
-  }
-
-  return (
-    <button className="fiEdit3" onClick={() => hendleEdit()}>
-      <FiEdit3 />
-    </button>
-  );
-};
+const Edit = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      background: "transparent",
+      border: "none",
+      cursor: "pointer"
+    }}
+    title="Editar registro"
+  >
+    <FiEdit size={18} />
+  </button>
+);
 
 export default Edit;

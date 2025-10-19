@@ -10,8 +10,39 @@ const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
     e.preventDefault();
 
     try {
-      const response = await api.post(endpoint, data);
-      console.log("Salvo com sucesso:", response.data);
+      let response;
+
+      if (data.receita_medica instanceof File) {
+        const formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === "recceita_medica" && value) {
+            formData.append(key, value);
+
+          } else {
+            formData.append(key, value);
+          }
+        });
+
+        if (endpoint.includes("update")) {
+          response = await api.put(endpoint, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+        } else {
+          response = await api.post(endpoint, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+
+      } else {
+        if (endpoint.includes("update")) {
+          response = await api.put(endpoint, data);
+
+        } else {
+          response = await api.post(endpoint, data);
+        }
+      }
 
       if (onSuccess) {
         onSuccess(response.data);
