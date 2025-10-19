@@ -11,7 +11,6 @@ import "./styles/globals.css";
 import AgendaPage from "./pages/agenda/agenda";
 import PacientesPage from "./pages/paciente/pacientes";
 import ProfissionaisPage from "./pages/profissional/profissionais";
-import AtendimentosPage from "./pages/atendimento/atendimento";
 
 function App() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -24,9 +23,11 @@ function App() {
 
   return (
     <div className="App">
-      <div className="header">
-        <h1 className="title">Bem-vindo, [nome da empresa]</h1>
-      </div>
+      {!pagina && (
+        <div className={`header ${pagina ? "hide" : ""}`}>
+          <h1 className="title animate-title">Bem-vindo, [nome da empresa]</h1>
+        </div>
+      )}
 
       <div className="container">
         <nav className="navbar">
@@ -39,7 +40,6 @@ function App() {
               <li> <button onClick={() => setPagina("agenda")}>Agenda</button> </li>
               <li> <button onClick={() => setPagina("pacientes")}>Pacientes</button> </li>
               <li> <button onClick={() => setPagina("profissionais")}>Profissionais</button> </li>
-              <li> <button onClick={() => setPagina("novo-atendimento")}>Novos Atendimentos</button> </li>
               <li> <button onClick={() => setPagina("cadastro")}>Editar Cadastro</button> </li>
             </ul>
           )}
@@ -48,7 +48,6 @@ function App() {
         {pagina === "agenda" && ( < AgendaPage />  )}
         {pagina === "pacientes" && ( < PacientesPage />)}
         {pagina === "profissionais" && ( < ProfissionaisPage /> )}
-        {pagina === "novo-atendimento" && ( < AtendimentosPage /> )}
       </div>
     </div>
   );
