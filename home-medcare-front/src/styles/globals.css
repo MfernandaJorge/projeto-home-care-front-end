@@ -11,22 +11,50 @@
   background-color: linear-gradient(#94dfdfff, #008080);    
 }
 
-/* Centraliza o header no meio da tela */
 .header {
   position: absolute;
   top: 50%;
-  left: 35%;
-  transform: translate(40%, -50%); /* centraliza vertical e horizontal */
+  left: 50%;
+  transform: translate(0%, -50%);
   text-align: center;
   /* width: 100%; */
-  z-index: 10;
+  transition: all 0.8s ease;
 }
 
-/* Título principal */
 .title {
   color: white;
-  font-size: 40px;
+  font-size: 42px;
   font-weight: bold;
+  letter-spacing: 2px;
+  align-items: center;
+  animation: floatIn 1.5s ease forwards;
+}
+
+/* Animação de entrada: flutua e aparece */
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Animação de saída */
+.header.hide {
+  opacity: 0;
+  transform: translate(-50%, -65%) scale(0.9);
+  pointer-events: none;
+}
+
+.header.show {
+  opacity: 1;
 }
 
 /* Animação de entrada */

@@ -24,9 +24,10 @@ function App() {
   return (
     <div className="App">
       {!pagina && (
-        <div className={`header ${pagina ? "hide" : ""}`}>
-          <h1 className="title animate-title">Bem-vindo, [nome da empresa]</h1>
+        <div className={`header ${pagina ? "hide" : "show"}`}>
+          <h1 className="title">Bem-vindo, [nome da empresa]</h1>
         </div>
+
       )}
 
       <div className="container">
