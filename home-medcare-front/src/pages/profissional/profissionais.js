@@ -7,6 +7,9 @@ import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
 
+import { maskTelefone } from "../../utils/formatFieds/maskPhone";
+import { maskDocs } from "../../utils/formatFieds/maskDocs";
+
 import { profissionalFields } from "../../configs/fields/profissionalFields";
 import { useState, useEffect } from "react";
 
@@ -21,11 +24,33 @@ const ProfissionaisPage = () => {
   }, {});
 
   const [formData, setFormData] = useState(initialForm);
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "telefone") {
+      const digits = String(value).replace(/\D/g, "").slice(0, 11);
+      setFormData({
+        ...formData,
+        [name]: digits
+      });
+      return;
+    }
+
+    if (name === "documento") {
+      const digits = String(value).replace(/\D/g, "");
+      setFormData({
+        ...formData,
+        [name]: digits
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value
     });
   };
 
@@ -38,12 +63,30 @@ const ProfissionaisPage = () => {
       .catch((err) => console.error("Erro ao carregar profissionais:", err));
   }, []);
 
-  // sucesso ao salvar
   const handleSuccess = () => {
-    alert("Profissional cadastrado com sucesso!");
-    setFormData(initialForm); // limpa o form
-    setFormPadrao(false); // fecha o form
-    api.get("/profissional/all").then((res) => setProfissionais(res.data)); // recarrega lista
+    setFormData(initialForm);
+    setFormPadrao(false);
+    api.get("/profissional/all").then((res) => setProfissionais(res.data));
+  };
+
+  const handleEdit = (profissional) => {
+    setFormPadrao(true);
+    setEditMode(true);
+    setEditId(profissional.id);
+
+    setFormData({
+      nome: profissional.nome || "",
+      documento: profissional.documento || "",
+      email: profissional.email || "",
+      telefone: profissional.telefone || "",
+      ocupacao: profissional.ocupacao || "",
+      logradouro: profissional.endereco?.logradouro || "",
+      bairro: profissional.endereco?.bairro || "",
+      cidade: profissional.endereco?.cidade || "",
+      estado: profissional.endereco?.estado || "",
+      cep: profissional.endereco?.cep || "",
+      numero: profissional.endereco?.numero || "",
+    });
   };
 
   return (
@@ -52,7 +95,8 @@ const ProfissionaisPage = () => {
 
       {formPadrao && (
         <div className="form-padrao">
-          <h3>Cadastrar Profissional</h3>
+          <h3>{editMode ? "Editar Profissional" : "Cadastrar Profissional"}</h3>
+
           <form>
             {profissionalFields.map((field) => (
               <input
@@ -66,24 +110,31 @@ const ProfissionaisPage = () => {
             ))}
 
             <SaveForm
-              endpoint="/profissional/cadastro"
+              endpoint={
+                editMode
+                  ? `profissional/update/${editId}`
+                  : "/profissional/cadastro"
+              }
               data={{
-                ...formData,
                 nome: formData.nome,
                 documento: formData.documento,
                 email: formData.email,
-                telefone: Number(formData.telefone),
-                ocupacao: Number(formData.ocupacao),
+                telefone: Number(formData.telefone.replace(/\D/g, "")) || null,
                 endereco: {
                   logradouro: formData.logradouro,
                   bairro: formData.bairro,
                   cidade: formData.cidade,
                   estado: formData.estado,
                   cep: formData.cep,
-                  numero: Number(formData.numero),
+                  numero: Number(formData.numero) || null,
                 },
+                ocupacao: formData.ocupacao ? Number(formData.ocupacao) : null
               }}
-              onSuccess={handleSuccess}
+              onSuccess={() => {
+                handleSuccess();
+                setEditMode(false);
+                setEditId(null);
+              }}
             />
           </form>
         </div>
@@ -97,6 +148,7 @@ const ProfissionaisPage = () => {
               <th>Nome</th>
               <th>Documento</th>
               <th>Telefone</th>
+              <th>Email</th>
               <th>Endereço</th>
               <th>Ocupação</th>
               <th></th>
@@ -109,17 +161,23 @@ const ProfissionaisPage = () => {
               profissionais.map((p, index) => (
                 <tr key={index}>
                   <td>{p.nome}</td>
-                  <td>{p.documento}</td>
-                  <td>{p.telefone}</td>
+                  <td>{maskDocs(p.documento)}</td>
+                  <td>{maskTelefone(p.telefone)}</td>
+                  <td>{p.email}</td>
                   <td>
                     {p.endereco?.logradouro}, {p.endereco?.numero},{" "}
                     {p.endereco?.bairro}, {p.endereco?.cidade}-
                     {p.endereco?.estado}, CEP {p.endereco?.cep}
                   </td>
                   <td>{p.ocupacao}</td>
-                  <td><Edit /></td>
                   <td>
-                    <Delete endpoint={`/profissional/delete/${p.id}`} />
+                    <Edit onClick={() => handleEdit(p)} />
+                  </td>
+                  <td>
+                    <Delete
+                      endpoint={`/profissional/delete/${p.id}`}
+                      onSuccess={() => {handleSuccess();}}
+                    />
                   </td>
                 </tr>
               ))

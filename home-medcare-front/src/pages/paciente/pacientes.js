@@ -7,6 +7,10 @@ import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
 
+import { formatDate } from "../../utils/formatFieds/formatDate";
+import { maskTelefone } from "../../utils/formatFieds/maskPhone";
+import { maskDocs } from "../../utils/formatFieds/maskDocs";
+
 import { pacienteFields } from "../../configs/fields/pacienteFields";
 import { useState,useEffect } from "react";
 
@@ -21,11 +25,33 @@ const PacientesPage = () => {
   }, {});
 
   const [formData, setFormData] = useState(initialForm);
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "telefone") {
+      const digits = String(value).replace(/\D/g, "").slice(0, 11);
+      setFormData({
+        ...formData,
+        [name]: digits
+      });
+      return;
+    }
+
+    if (name === "documento") {
+      const digits = String(value).replace(/\D/g, "");
+      setFormData({
+        ...formData,
+        [name]: digits
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
@@ -39,11 +65,30 @@ const PacientesPage = () => {
   }, []);
 
   const handleSuccess = () => {
-    alert("Paciente cadastrado com sucesso!");
-    setFormData(initialForm); // limpa o form
-    setFormPadrao(false); // fecha o form
-    api.get("/paciente/all").then((res) => setPaciente(res.data)); // recarrega lista
+    setFormData(initialForm);
+    setFormPadrao(false);
+    api.get("/paciente/all").then((res) => setPaciente(res.data));
   }
+
+  const handleEdit = (paciente) => {
+    setFormPadrao(true);
+    setEditMode(true);
+    setEditId(paciente.id);
+
+    setFormData({
+      nome: paciente.nome || "",
+      documento: paciente.documento || "",
+      email: paciente.email || "",
+      telefone: paciente.telefone || "",
+      dataNascimento: paciente.dataNascimento || "",
+      logradouro: paciente.endereco?.logradouro || "",
+      bairro: paciente.endereco?.bairro || "",
+      cidade: paciente.endereco?.cidade || "",
+      estado: paciente.endereco?.estado || "",
+      cep: paciente.endereco?.cep || "",
+      numero: paciente.endereco?.numero || "",
+    });
+  };
 
   return (
     <div className="pagina-padrao">
@@ -51,7 +96,7 @@ const PacientesPage = () => {
 
         {formPadrao && (
           <div className="form-padrao">
-            <h3>Cadastrar Paciente</h3>
+            <h3>{editMode ? "Editar Paciente" : "Cadastrar Paciente"}</h3>
 
               <form>
                 {pacienteFields.map((field) => (
@@ -65,27 +110,32 @@ const PacientesPage = () => {
                   />
                 ))}
 
-                {/* Botão que chama API de forma padrão */}
                 <SaveForm
-                  endpoint="/paciente/cadastro"
+                  endpoint={
+                    editMode
+                      ? `paciente/update/${editId}` 
+                      : "/paciente/cadastro" 
+                  }
                   data={{
-                    ...formData,
                     nome: formData.nome,
                     documento: formData.documento,
                     email: formData.email,
-                    telefone: Number(formData.telefone),
-                    data_nascimento: formData.data_nascimento,
-                    distancia: Number(formData.distancia),
+                    telefone: Number(formData.telefone.replace(/\D/g, "")) || null,
                     endereco: {
                       logradouro: formData.logradouro,
                       bairro: formData.bairro,
                       cidade: formData.cidade,
                       estado: formData.estado,
                       cep: formData.cep,
-                      numero: Number(formData.numero),
+                      numero: Number(formData.numero) || null
                     },
+                    dataNascimento: formData.dataNascimento
                   }}
-                  onSuccess={handleSuccess}
+                  onSuccess={() => {
+                    handleSuccess();
+                    setEditMode(false);
+                    setEditId(null);
+                  }}
                 />
               </form>
           </div>
@@ -109,16 +159,25 @@ const PacientesPage = () => {
           <tbody>
             {paciente.length > 0 ? (
               paciente.map((p, index) => (
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td> < Edit /> </td>
+                <tr key={index}>
+                  <td>{p.nome}</td>
+                  <td>{maskDocs(p.documento)}</td>
+                  <td>{p.email}</td>
+                  <td>{maskTelefone(p.telefone)}</td>
                   <td>
-                    <Delete endpoint={`/paciente/delete/${p.id}`} />
+                    {p.endereco?.logradouro}, {p.endereco?.numero},{" "}
+                    {p.endereco?.bairro}, {p.endereco?.cidade}-
+                    {p.endereco?.estado}, CEP {p.endereco?.cep}
+                  </td>
+                  <td>{formatDate(p.dataNascimento)}</td>
+                  <td>
+                    <Edit onClick={() => handleEdit(p)} />
+                  </td>
+                  <td>
+                    <Delete 
+                      endpoint={`/paciente/delete/${p.id}`}
+                      onSuccess={() => {handleSuccess();}}
+                      />
                   </td>
                 </tr>
               ))
