@@ -11,22 +11,46 @@
   background-color: linear-gradient(#94dfdfff, #008080);    
 }
 
-.title {
-  color: white;
+/* Centraliza o header no meio da tela */
+.header {
+  position: absolute;
+  top: 50%;
+  left: 35%;
+  transform: translate(40%, -50%); /* centraliza vertical e horizontal */
   text-align: center;
-  padding: 20px;
-  font-size: 35px;
-  font-weight: bold;
-  animation: flipTitle 2s;
+  /* width: 100%; */
+  z-index: 10;
 }
 
-@keyframes flipTitle {
-  from {
-    transform: rotateX(90deg);
+/* Título principal */
+.title {
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+/* Animação de entrada */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
   }
-  to {
-    transform: rotateX(0deg);
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
+}
+
+.animate-title {
+  animation: fadeInScale 1s ease forwards;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Oculta com animação quando a página é selecionada */
+.header.hide {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+  pointer-events: none; /* evita interação enquanto está oculto */
 }
 
 /* Navbar container */
@@ -254,18 +278,62 @@
   background-color: #00a5a5;
   border-radius: 8px;
   min-width: 180px;
+  height: 100%;
   text-align: center;
   color: white;
 }
 
-.form-padrao input, .form-padrao select {
+.form-padrao input {
   padding: 8px;
   margin: 5px;
-  border: white 1px solid;
-  color: white;
+  border: 1px solid white;
+  color: #726767ff;
   border-radius: 4px;
   width: 200px;
   background: #dddddd82;
+  outline: none;
+  font-size: 14px;
+}
+
+.form-padrao select {
+  padding: 8px 12px;
+  margin: 5px;
+  border: 1px solid #ffffffcc;
+  border-radius: 6px;
+  width: 200px;
+  background: #dddddd82;
+  color: #807c7cff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  /* remove seta padrão */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml;charset=UTF-8,<svg fill='white' height='14' viewBox='0 0 24 24' width='14' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.form-padrao input:focus {
+  border-color: #ffffffcc;
+  background: #dddddd82;
+  box-shadow: 0 0 4px #ffffff80;
+}
+
+.form-padrao select:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 5px #ffffff80;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.form-padrao option {
+  background-color: #00a5a5;
+  color: white;
 }
 
 .fiEdit3 a {
@@ -287,3 +355,102 @@
 .fiTrash:hover {
   background: #dddddd82;
 }
+
+/* Layout quando o calendário estiver aberto: coluna fixa para o calendário + conteúdo principal */
+.pagina-padrao.with-calendario {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 20px;
+}
+
+/* Wrapper do calendário controla max-width */
+.calendario-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Força form e tabela a ocuparem a segunda coluna do grid */
+.pagina-padrao.with-calendario .form-padrao,
+.pagina-padrao.with-calendario .table-padrao {
+  grid-column: 1 / 2;
+}
+
+/* Responsivo: em telas pequenas empilha o calendário acima do conteúdo */
+@media (max-width: 900px) {
+  .pagina-padrao.with-calendario {
+    display: flex;
+    flex-direction: column;
+  }
+  .calendario-wrapper {
+    max-width: 100%;
+    margin-bottom: 12px;
+  }
+}
+
+/* Título centralizado no topo */
+.form-padrao h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Etapa inicial: container da escolha */
+.busca-opcoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* centraliza horizontalmente */
+  justify-content: center;   /* centraliza verticalmente se precisar altura */
+  gap: 16px;
+  width: 100%;
+  min-height: 150px;
+}
+
+/* Container dos botões lado a lado */
+.busca-botoes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-profissional,
+.btn-datahora {
+  background-color: #009999;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  border: 2px solid white;
+  cursor: pointer;
+
+  display: inline-flex;       /* flex para centralizar o texto */
+  align-items: center;        /* centraliza verticalmente */
+  justify-content: center;    /* centraliza horizontalmente */
+  text-align: center;
+
+  min-width: 200px;           /* garante largura mínima igual para os dois */
+  padding: 10px 10px;         /* 10px interno mantém >=5px da borda */
+  box-sizing: border-box;     /* inclui borda e padding na largura */
+
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+}
+
+/* Hover */
+.btn-profissional:hover,
+.btn-datahora:hover {
+  background-color: #00b3b3;
+  border-color: #ffffffcc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.25);
+}
+
+/* Ativo / clicado */
+.btn-profissional:active,
+.btn-datahora:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
