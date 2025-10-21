@@ -1,5 +1,5 @@
 .App {
-  background: linear-gradient(#94dfdfff, #008080);    
+  background: linear-gradient(#94dfdfff, #008080);
 }
 
 .container {
@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: left;
   justify-content: left;
-  background-color: linear-gradient(#94dfdfff, #008080);    
+  background-color: linear-gradient(#94dfdfff, #008080);
 }
 
 .header {
@@ -17,7 +17,6 @@
   left: 50%;
   transform: translate(0%, -50%);
   text-align: center;
-  /* width: 100%; */
   transition: all 0.8s ease;
 }
 
@@ -405,15 +404,23 @@
   grid-column: 1 / 2;
 }
 
-/* Responsivo: em telas pequenas empilha o calendário acima do conteúdo */
 @media (max-width: 900px) {
-  .pagina-padrao.with-calendario {
-    display: flex;
-    flex-direction: column;
-  }
-  .calendario-wrapper {
+  .calendario-container {
     max-width: 100%;
-    margin-bottom: 12px;
+    width: 95%;
+    padding: 12px;
+  }
+
+  .calendario-grid {
+    gap: 4px;
+  }
+
+  .calendario-celula {
+    min-height: 55px;
+  }
+
+  .calendario-header h3 {
+    font-size: 18px;
   }
 }
 
@@ -482,3 +489,133 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
+/* === Animações suaves entre etapas do formulário === */
+/* Container da transição */
+.form-step {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideIn 0.5s ease forwards;
+}
+
+/* Animação de entrada */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animação de saída (opcional, caso queira fazer desaparecer com estilo) */
+.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s ease;
+}
+
+/* === Estilo do calendário === */
+/* === Estilo do calendário (ajustado e com tamanho menor) === */
+.calendario-container {
+  background: linear-gradient(135deg, #00a5a5, #008080);
+  color: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  margin: 20px auto;
+  max-width: 750px;
+  width: 90%;
+  max-height: 600px;     /* 🔹 altura máxima controlada */
+  overflow: hidden;       /* 🔹 impede scroll interno */
+  animation: fadeSlideIn 0.5s ease forwards;
+}
+
+.calendario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendario-header h3 {
+  margin: 0;
+  font-size: 22px;
+  color: white;
+}
+
+.calendario-header button {
+  background: none;
+  border: 2px solid white;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 18px;
+  transition: background 0.3s;
+}
+
+.calendario-header button:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* === GRADE DO CALENDÁRIO (ALTURA REDUZIDA) === */
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.calendario-celula {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  min-height: 55px;        /* 🔹 altura reduzida */
+  max-height: 65px;        /* 🔹 limita crescimento */
+  padding: 4px;            /* 🔹 menos padding */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendario-celula:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.03);
+}
+
+.calendario-celula.selecionada {
+  background: rgba(255,255,255,0.3);
+  border: 2px solid white;
+}
+
+/* Número do dia */
+.calendario-dia {
+  text-align: left;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Contador de eventos */
+.calendario-contador {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  background: white;
+  color: #00a5a5;
+  border-radius: 50%;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Área de eventos compacta */
+.calendario-eventos {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
