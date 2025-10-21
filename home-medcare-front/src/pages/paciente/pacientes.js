@@ -79,7 +79,7 @@ const PacientesPage = () => {
       nome: paciente.nome || "",
       documento: paciente.documento || "",
       email: paciente.email || "",
-      telefone: paciente.telefone || "",
+      telefone: String(paciente.telefone || ""),
       dataNascimento: paciente.dataNascimento || "",
       logradouro: paciente.endereco?.logradouro || "",
       bairro: paciente.endereco?.bairro || "",
@@ -120,7 +120,7 @@ const PacientesPage = () => {
                     nome: formData.nome,
                     documento: formData.documento,
                     email: formData.email,
-                    telefone: Number(formData.telefone.replace(/\D/g, "")) || null,
+                    telefone: Number(String(formData.telefone).replace(/\D/g, "")) || null,
                     endereco: {
                       logradouro: formData.logradouro,
                       bairro: formData.bairro,

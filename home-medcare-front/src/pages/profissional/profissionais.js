@@ -78,7 +78,7 @@ const ProfissionaisPage = () => {
       nome: profissional.nome || "",
       documento: profissional.documento || "",
       email: profissional.email || "",
-      telefone: profissional.telefone || "",
+      telefone: String(profissional.telefone || ""),
       ocupacao: profissional.ocupacao || "",
       logradouro: profissional.endereco?.logradouro || "",
       bairro: profissional.endereco?.bairro || "",
@@ -119,7 +119,7 @@ const ProfissionaisPage = () => {
                 nome: formData.nome,
                 documento: formData.documento,
                 email: formData.email,
-                telefone: Number(formData.telefone.replace(/\D/g, "")) || null,
+                telefone: Number(String(formData.telefone).replace(/\D/g, "")) || null,
                 endereco: {
                   logradouro: formData.logradouro,
                   bairro: formData.bairro,
