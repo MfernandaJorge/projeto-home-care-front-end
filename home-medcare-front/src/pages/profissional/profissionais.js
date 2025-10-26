@@ -31,7 +31,8 @@ const ProfissionaisPage = () => {
     const { name, value } = e.target;
 
     if (name === "telefone") {
-      const digits = String(value).replace(/\D/g, "").slice(0, 11);
+      // const digits = String(value).replace(/\D/g, "").slice(0, 11); -- TELEFONE COM DDD
+      const digits = String(value).replace(/\D/g, "").slice(0, 9);
       setFormData({
         ...formData,
         [name]: digits
@@ -62,6 +63,15 @@ const ProfissionaisPage = () => {
       .then((res) => setProfissionais(res.data))
       .catch((err) => console.error("Erro ao carregar profissionais:", err));
   }, []);
+
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  // calcula índices para exibir apenas os registros da página atual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProfissionais = profissionais.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleSuccess = () => {
     setFormData(initialForm);
@@ -188,6 +198,12 @@ const ProfissionaisPage = () => {
             )}
           </tbody>
         </table>
+        <Pagination
+          totalItems={profissionais.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

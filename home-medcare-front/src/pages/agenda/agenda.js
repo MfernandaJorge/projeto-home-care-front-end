@@ -6,6 +6,9 @@ import OpenForm from "../../components/ui/buttons/openForm";
 import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
+import Pagination from "../../components/ui/pagination/pagination";
+
+import { formatDate } from "../../utils/formatFieds/formatDate";
 
 import OpenCalendario from "./openCalendario";
 import Calendario from "./calendario";
@@ -25,6 +28,15 @@ const AgendaPage = () => {
   useEffect(() => {
     api.get("/agenda/all").then(res => setAgenda(res.data)).catch(err => console.error(err));
   }, []);
+
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
+
+  // calcula índices para exibir apenas os registros da página atual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAgenda = agenda.slice(indexOfFirstItem, indexOfLastItem);
 
   const [searchMode, setSearchMode] = useState(null);
   const [selectedProfId, setSelectedProfId] = useState("");
@@ -198,6 +210,65 @@ const AgendaPage = () => {
           )}
         </div>
       )}
+
+
+      <div className="table-padrao">
+        <h3>Pacientes</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>Profissional</th>
+              <th>Data</th>
+              <th>Hora início</th>
+              <th>Hora prevista para término</th>
+              <th>Complexidade</th>
+              <th>Descrição</th>
+              <th>Status</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentAgenda.length > 0 ? (
+              currentAgenda.map((p, index) => (
+                <tr key={index}>
+                  <td>{p.id_paciente}</td>
+                  <td>{p.id_profissional}</td>
+                  <td>{formatDate(p.data_agendamento)}</td>
+                  <td>{p.hora_agendamento}</td>
+                  <td>{p.hora_agendamento}</td>
+                  <td>{p.complexidade}</td>
+                  <td>{p.descricao}</td>
+                  <td>{p.status_agendamento}</td>
+                  <td>
+                    <Edit onClick={() => handleEdit(p)} />
+                  </td>
+                  <td>
+                    <Delete
+                      endpoint={`/agenda/delete/${p.id}`}
+                      onSuccess={() => {
+                        handleSuccess();
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8">Nenhum atendimento cadastrado.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <Pagination
+          totalItems={agenda.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      </div>
     </div>
   );
 }
