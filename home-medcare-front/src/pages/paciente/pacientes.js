@@ -168,8 +168,8 @@ const PacientesPage = () => {
             </tr>
           </thead>
           <tbody>
-            {paciente.length > 0 ? (
-              paciente.map((p, index) => (
+            {currentPacientes.length > 0 ? (
+              currentPacientes.map((p, index) => (
                 <tr key={index}>
                   <td>{p.nome}</td>
                   <td>{maskDocs(p.documento)}</td>
@@ -187,14 +187,16 @@ const PacientesPage = () => {
                   <td>
                     <Delete 
                       endpoint={`/paciente/delete/${p.id}`}
-                      onSuccess={() => {handleSuccess();}}
+                      onSuccess={() => {
+                        handleSuccess();
+                      }}
                       />
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7">Nenhum paciente cadastrado.</td>
+                <td colSpan="8">Nenhum paciente cadastrado.</td>
               </tr>
             )}
           </tbody>
