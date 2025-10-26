@@ -169,8 +169,8 @@ const ProfissionaisPage = () => {
           </thead>
 
           <tbody>
-            {profissionais.length > 0 ? (
-              profissionais.map((p, index) => (
+            {currentProfissionais.length > 0 ? (
+              currentProfissionais.map((p, index) => (
                 <tr key={index}>
                   <td>{p.nome}</td>
                   <td>{maskDocs(p.documento)}</td>
