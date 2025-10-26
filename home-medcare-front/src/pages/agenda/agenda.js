@@ -62,8 +62,8 @@ const AgendaPage = () => {
     if (!selectedProfId) { setAvailableTimes(possibleTimes); return; }
     const dateKey = (formData.data_agendamento || "").split("T")[0];
     const booked = agenda.filter(a => String(a.id_profissional) === String(selectedProfId))
-                         .filter(a => dateKey ? (a.data_agendamento || "").split("T")[0] === dateKey : true)
-                         .map(a => String(a.hora_agendamento || "").trim());
+      .filter(a => dateKey ? (a.data_agendamento || "").split("T")[0] === dateKey : true)
+      .map(a => String(a.hora_agendamento || "").trim());
     setAvailableTimes(possibleTimes.filter(t => !booked.includes(t)));
   }, [selectedProfId, formData.data_agendamento, agenda]);
 
