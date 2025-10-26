@@ -40,9 +40,8 @@ const AgendaPage = () => {
 
   const [searchMode, setSearchMode] = useState(null);
   const [selectedProfId, setSelectedProfId] = useState("");
-  const [showProfDateTimeStep, setShowProfDateTimeStep] = useState(false);
-  const [showPatientStep, setShowPatientStep] = useState(false);
   const [showFullForm, setShowFullForm] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [showSimulatedTimesStep, setShowSimulatedTimesStep] = useState(false);
   const [simulatedTimes, setSimulatedTimes] = useState([]);
@@ -109,20 +108,22 @@ const AgendaPage = () => {
   };
 
   const fetchSimulatedTimes = async () => {
-    if (!formData.id_profissional || !formData.id_paciente) return;
+    if (!formData.data_agendamento || !formData.hora_agendamento || !formData.id_paciente) return;
     try {
       const payload = {
         pacienteId: Number(formData.id_paciente),
-        profissionalId: Number(formData.id_profissional),
+        profissionalId: Number(formData.id_profissional) || null,
         tipoAtendimento: Number(formData.tipoAtendimento) || 2,
         diaDesejado: formData.data_agendamento || "",
-        horaDesejada: formData.hora_agendamento || "",
+        horaDesejada: formData.hora_agendamento.includes(":") && formData.hora_agendamento.length === 5 ? `${formData.hora_agendamento}:00` : formData.hora_agendamento,
         diasSimulacao: 2
       };
+  
       const res = await api.post("/agendamento/simular", payload);
       setSimulatedTimes(res.data || []);
       setShowSimulatedTimesStep(true);
       setShowFullForm(false);
+
     } catch (err) {
       console.error(err);
       alert("Erro ao buscar horários disponíveis.");
@@ -132,7 +133,11 @@ const AgendaPage = () => {
   return (
     <div className={`pagina-padrao ${calendario ? "with-calendario" : ""}`}>
       <OpenCalendario onToggle={setCalendario} />
-      {calendario && <div className="calendario-wrapper"><Calendario agenda={agenda} /></div>}
+      {calendario && 
+        <div className="calendario-wrapper">
+          <Calendario agenda={agenda} />
+        </div>
+      }
 
       <OpenForm onToggle={(open) => { setFormPadrao(open); if (!open) { setSearchMode(null); setShowFullForm(false); } }} />
 
@@ -140,72 +145,200 @@ const AgendaPage = () => {
         <div className="form-padrao">
           <h3>Agendar Atendimento</h3>
 
-          {!showFullForm && !showProfDateTimeStep && !showPatientStep && !showSimulatedTimesStep && (
+          {/* STEP 0 - pergunta inicial */}
+          {currentStep === 0 && (
             <div className="busca-opcoes">
-              <div>Buscar por disponibilidade de:</div>
+              <div>Há preferência por profissional?</div>
               <div className="busca-botoes">
-                <button onClick={() => setSearchMode("profissional")}>Profissionais</button>
-                <button onClick={() => { setSearchMode("dataHora"); setShowPatientStep(true); }}>Data e Hora</button>
+                <button onClick={() => setCurrentStep(1)}>Sim</button>
+                <button onClick={() => setCurrentStep(2)}>Não</button>
               </div>
             </div>
           )}
 
-          {searchMode === "profissional" && !showProfDateTimeStep && (
+          {/* STEP 1 - selecionar profissional */}
+          {currentStep === 1 && (
             <div>
-              <select value={selectedProfId} onChange={e => setSelectedProfId(e.target.value)}>
+              <div>Escolha um profissional:</div>
+              <select
+                value={selectedProfId}
+                onChange={e => setSelectedProfId(e.target.value)}
+              >
                 <option value="">Selecione o profissional</option>
-                {profissionaisOptions.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                {profissionaisOptions.map(p => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
               </select>
-              <button onClick={() => { if (!selectedProfId) return alert("Selecione um profissional."); setFormData({ ...formData, id_profissional: selectedProfId }); setShowProfDateTimeStep(true); }}>Continuar</button>
+
+              <div className="botoes-step">
+                <button onClick={() => setCurrentStep(0)}>Voltar</button>
+                <button onClick={() => {
+                  if (!selectedProfId) return alert("Selecione um profissional.");
+                  setFormData({ ...formData, id_profissional: selectedProfId });
+                  setCurrentStep(2);
+                }}>Continuar</button>
+              </div>
             </div>
           )}
 
-          {showProfDateTimeStep && (
+          {/* STEP 2 - data e hora */}
+          {currentStep === 2 && (
             <div>
-              <input type="date" value={formData.data_agendamento || ""} onChange={e => setFormData({ ...formData, data_agendamento: e.target.value })} />
-              <select value={formData.hora_agendamento || ""} onChange={e => setFormData({ ...formData, hora_agendamento: e.target.value })}>
-                <option value="">Selecione o horário</option>
-                {availableTimes.map(t => <option key={t} value={t}>{t}</option>)}
+              <div>Escolha a data e hora:</div>
+              <input
+                type="date"
+                value={formData.data_agendamento || ""}
+                onChange={e => setFormData({ ...formData, data_agendamento: e.target.value })}
+              />
+              <select
+                value={formData.hora_agendamento || ""}
+                onChange={e => setFormData({ ...formData, hora_agendamento: e.target.value })}
+              >
+                <option value="">Selecione o horário:</option>
+                {availableTimes.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
               </select>
-              <button onClick={() => { if (!formData.data_agendamento || !formData.hora_agendamento) return alert("Selecione data e hora."); setShowProfDateTimeStep(false); setShowPatientStep(true); }}>Continuar</button>
+
+              <div className="botoes-step">
+                <button onClick={() => setCurrentStep(1)}>Voltar</button>
+                <button onClick={() => {
+                  if (!formData.data_agendamento || !formData.hora_agendamento)
+                    return alert("Selecione data e hora.");
+                  setCurrentStep(3);
+                }}>Continuar</button>
+              </div>
             </div>
           )}
 
-          {showPatientStep && (
+          {/* STEP 3 - paciente */}
+          {currentStep === 3 && (
             <div>
-              <select value={formData.id_paciente || ""} onChange={e => setFormData({ ...formData, id_paciente: e.target.value })}>
+              <div>Escolha um paciente:</div>
+              <select
+                value={formData.id_paciente || ""}
+                onChange={e => setFormData({ ...formData, id_paciente: e.target.value })}
+              >
                 <option value="">Selecione o paciente</option>
-                {pacientesOptions.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                {pacientesOptions.map(p => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
               </select>
-              <button onClick={() => { if (!formData.id_paciente) return alert("Selecione um paciente."); fetchSimulatedTimes(); setShowPatientStep(false); }}>Continuar</button>
+
+              <div className="botoes-step">
+                <button onClick={() => setCurrentStep(2)}>Voltar</button>
+                <button onClick={() => {
+                  if (!formData.id_paciente) return alert("Selecione um paciente.");
+                  fetchSimulatedTimes();
+                  setCurrentStep(4);
+                }}>Continuar</button>
+              </div>
             </div>
           )}
 
-          {showSimulatedTimesStep && (
+          {/* STEP 4 - horários simulados */}
+          {currentStep === 4 && (
             <div>
-              <select value={selectedSimulatedTime} onChange={e => setSelectedSimulatedTime(e.target.value)}>
-                <option value="">Selecione o horário</option>
-                {simulatedTimes.map((s, i) => <option key={i} value={s.horaInicio}>{s.data} - {s.horaInicio} ({s.tempoTotalMin} min)</option>)}
+              <select
+                name="simulacaoEscolhida"
+                onChange={(e) => {
+                  const opcao = simulatedTimes.find(s => 
+                    `${s.id_profissional}-${s.data}-${s.hora}` === e.target.value
+                  );
+
+                  setFormData({
+                    ...formData,
+                    id_profissional: opcao.profissional,
+                    data_agendamento: opcao.data,
+                    hora_agendamento: opcao.horaInicio
+                  });
+                }}
+              >
+                <option value="">Selecione uma opção</option>
+                {simulatedTimes.map(s => (
+                  <option
+                    key={`${s.profissional}-${s.data}-${s.horaInicio}`}
+                    value={`${s.profissional}-${s.data}-${s.horaInicio}`}
+                  >
+                    {`${s.profissional}, ${s.horaInicio}, ${formatDate(s.data)}`}
+                  </option>
+                ))}
               </select>
-              <button onClick={() => { if (!selectedSimulatedTime) return alert("Selecione um horário."); setFormData({ ...formData, data_agendamento: simulatedTimes.find(s => s.horaInicio === selectedSimulatedTime)?.data, hora_agendamento: selectedSimulatedTime }); setShowSimulatedTimesStep(false); setShowFullForm(true); }}>Continuar</button>
+
+              <div className="botoes-step">
+                <button onClick={() => setCurrentStep(3)}>Voltar</button>
+                <button onClick={() => {
+                  if (!selectedSimulatedTime) return alert("Selecione um horário.");
+                  const sim = simulatedTimes.find(s => s.horaInicio === selectedSimulatedTime);
+                  setFormData({
+                    ...formData,
+                    data_agendamento: sim?.data,
+                    hora_agendamento: selectedSimulatedTime
+                  });
+                  setCurrentStep(5);
+                }}>Continuar</button>
+              </div>
             </div>
           )}
 
-          {showFullForm && (
+
+          {/* STEP 5 - formulário final */}
+          {currentStep === 5 && (
             <form>
-              {camposAgenda.map(field => {
-                if (field.type === "select" || field.id === "id_profissional" || field.id === "id_paciente" || field.id === "hora_agendamento") {
+              {camposAgenda
+                // Exibe apenas os campos finais desejados
+                .filter(field =>
+                  ["complexidade", "descricao", "status_agendamento"].includes(field.id)
+                )
+                .map(field => {
+                  if (field.type === "select") {
+                    return (
+                      <select
+                        key={field.id}
+                        name={field.id}
+                        value={formData[field.id] || ""}
+                        onChange={handleChange}
+                      >
+                        <option value="">{field.placeholder}</option>
+                        {field.options?.map(o => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
+                      </select>
+                    );
+                  }
                   return (
-                    <select key={field.id} name={field.id} value={formData[field.id] || ""} onChange={handleChange} disabled={!!formData[field.id]}>
-                      <option value="">{field.placeholder}</option>
-                      {field.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
+                    <input
+                      key={field.id}
+                      type={field.type}
+                      name={field.id}
+                      placeholder={field.placeholder}
+                      value={formData[field.id] || ""}
+                      onChange={handleChange}
+                    />
                   );
-                }
-                return <input key={field.id} type={field.type} name={field.id} placeholder={field.placeholder} value={formData[field.id] || ""} onChange={handleChange} />;
               })}
 
-              <SaveForm endpoint={editMode ? `agenda/update/${editId}` : "/agenda/novo-agendamento"} data={{ ...formData, id_profissional: Number(formData.id_profissional), id_paciente: Number(formData.id_paciente), complexidade: Number(formData.complexidade), status_agendamento: Number(formData.status_agendamento) }} onSuccess={() => { handleSuccess(); setEditMode(false); setEditId(null); }} />
+              <div className="botoes-step">
+                <button type="button" onClick={() => setCurrentStep(4)}>Voltar</button>
+                <SaveForm
+                  endpoint={editMode ? `agenda/update/${editId}` : "/agendamento/agendar"}
+                  data={{
+                    ...formData,
+                    pacienteId: Number(formData.id_paciente),
+                    profissionalId: formData.id_profissional ? Number(formData.id_profissional) : null,
+                    tipoAtendimento: Number(formData.complexidade),
+                    diaDesejado: formData.data_agendamento,
+                    horaDesejada: formData.hora_agendamento,
+                    diasSimulacao: 1
+                  }}
+                  onSuccess={() => {
+                    handleSuccess();
+                    setEditMode(false);
+                    setEditId(null);
+                    setCurrentStep(0);
+                  }}
+                />
+              </div>
             </form>
           )}
         </div>
