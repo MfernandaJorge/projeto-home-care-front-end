@@ -316,7 +316,8 @@ const AgendaPage = () => {
                       onChange={handleChange}
                     />
                   );
-              })}
+                })
+              }
 
               <div className="botoes-step">
                 <button type="button" onClick={() => setCurrentStep(4)}>Voltar</button>
