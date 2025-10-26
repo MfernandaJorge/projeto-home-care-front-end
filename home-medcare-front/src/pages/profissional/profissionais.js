@@ -6,6 +6,8 @@ import OpenForm from "../../components/ui/buttons/openForm";
 import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
+import Pagination from "../../components/ui/pagination/pagination";
+
 
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
 import { maskDocs } from "../../utils/formatFieds/maskDocs";
