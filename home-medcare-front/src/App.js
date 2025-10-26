@@ -11,6 +11,7 @@ import "./styles/globals.css";
 import AgendaPage from "./pages/agenda/agenda";
 import PacientesPage from "./pages/paciente/pacientes";
 import ProfissionaisPage from "./pages/profissional/profissionais";
+import MeusDadosPage from "./pages/meusDados/meusDados";
 
 function App() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -41,7 +42,7 @@ function App() {
               <li> <button onClick={() => setPagina("agenda")}>Agenda</button> </li>
               <li> <button onClick={() => setPagina("pacientes")}>Pacientes</button> </li>
               <li> <button onClick={() => setPagina("profissionais")}>Profissionais</button> </li>
-              <li> <button onClick={() => setPagina("cadastro")}>Editar Cadastro</button> </li>
+              <li> <button onClick={() => setPagina("meusDados")}>Meus Dados</button> </li>
             </ul>
           )}
         </nav>
@@ -49,6 +50,7 @@ function App() {
         {pagina === "agenda" && ( < AgendaPage />  )}
         {pagina === "pacientes" && ( < PacientesPage />)}
         {pagina === "profissionais" && ( < ProfissionaisPage /> )}
+        {pagina === "meusDados" && ( < MeusDadosPage /> )}
       </div>
     </div>
   );
