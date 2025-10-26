@@ -160,7 +160,7 @@ const ProfissionaisPage = () => {
               <th>Nome</th>
               <th>Documento</th>
               <th>Telefone</th>
-              <th>Email</th>
+              {/* <th>Email</th> */}
               <th>Endereço</th>
               <th>Ocupação</th>
               <th></th>
@@ -175,7 +175,7 @@ const ProfissionaisPage = () => {
                   <td>{p.nome}</td>
                   <td>{maskDocs(p.documento)}</td>
                   <td>{maskTelefone(p.telefone)}</td>
-                  <td>{p.email}</td>
+                  {/* <td>{p.email}</td> */}
                   <td>
                     {p.endereco?.logradouro}, {p.endereco?.numero},{" "}
                     {p.endereco?.bairro}, {p.endereco?.cidade}-

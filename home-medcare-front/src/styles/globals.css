@@ -1,5 +1,6 @@
 .App {
-  background: linear-gradient(#94dfdfff, #008080);
+  /* background: linear-gradient(#94dfdfff, #008080); */
+  background: linear-gradient(#d3bfeca6,  #34ffff71, #823cdfbd);
 }
 
 .container {
@@ -8,7 +9,7 @@
   flex-direction: column;
   align-items: left;
   justify-content: left;
-  background-color: linear-gradient(#94dfdfff, #008080);
+  background-color: linear-gradient(#94dfdfff, #34ffffff);
 }
 
 .header {
@@ -157,17 +158,16 @@
   .navbar ul {
     position: static;
     flex-direction: row;
-    background: none;
     box-shadow: none;
     gap: 20px;
     padding: 0;
     animation: slideLeft 0.3s ease;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0px 4px 8px rgba(27, 3, 82, 0.73);
     margin: 0;
     padding: 10px;
     top: 60px;
     left: 10px;
-    background-color: #00a5a5;
+    background-color: #047d8dff;
     border-radius: 8px;
     display: flex;
     gap: 10px;
@@ -252,10 +252,10 @@
   gap: 20px;
   padding: 0;
   animation: slideLeft 0.3s ease;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0px 4px 8px rgba(27, 3, 82, 0.73);
   margin: 10px;
   padding: 10px;
-  background-color: #00a5a5;
+  background-color: #047d8dff;
   border-radius: 8px;
   min-width: 180px;
   text-align: center;
@@ -274,7 +274,7 @@
   color: white;
   padding: 12px 15px;
   border-collapse: collapse;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .table-padrao table th {
@@ -283,6 +283,7 @@
   align-items: center;
   justify-content: center;
   border-top: 1px solid #dddddd82;
+  font-size: 16px;
 }
 
 .table-padrao table td {
@@ -290,6 +291,7 @@
   padding: 12px 15px;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
 }
 
 .form-padrao {
@@ -302,7 +304,8 @@
   box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
   margin: 10px;
   padding: 10px;
-  background-color: #00a5a5;
+  background-color: #047d8dff;
+
   border-radius: 8px;
   min-width: 180px;
   height: 100%;
@@ -319,7 +322,8 @@
   width: 200px;
   background: #dddddd82;
   outline: none;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .form-padrao select {
@@ -449,37 +453,9 @@
   gap: 12px;
   justify-content: center;
   align-items: center;
-}
-
-.btn-profissional,
-.btn-datahora {
-  background-color: #009999;
-  color: white;
-  font-weight: bold;
-  border-radius: 8px;
-  border: 2px solid white;
-  cursor: pointer;
-
-  display: inline-flex;       /* flex para centralizar o texto */
-  align-items: center;        /* centraliza verticalmente */
-  justify-content: center;    /* centraliza horizontalmente */
-  text-align: center;
-
-  min-width: 200px;           /* garante largura mínima igual para os dois */
-  padding: 10px 10px;         /* 10px interno mantém >=5px da borda */
-  box-sizing: border-box;     /* inclui borda e padding na largura */
-
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  transition: background 0.3s, transform 0.2s, box-shadow 0.2s, border-color 0.3s;
-}
-
-/* Hover */
-.btn-profissional:hover,
-.btn-datahora:hover {
-  background-color: #00b3b3;
-  border-color: #ffffffcc;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0,0,0,0.25);
+  border-color: white;
+  background: none;
+  border: 1px solid #dddddd82;
 }
 
 /* Ativo / clicado */
@@ -619,3 +595,33 @@
   font-size: 13px;
   line-height: 1.4;
 }
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pagination button {
+  background: none;
+  border: 1px solid #dddddd82;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.pagination button.active {
+  background-color: #54426cff;
+  color: white;
+  border-color: #dddddd82;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

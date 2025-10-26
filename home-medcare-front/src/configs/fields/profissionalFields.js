@@ -10,11 +10,11 @@ export const profissionalFields = [
     name: "documento", 
     type: "text", 
     placeholder: "Documento" 
-  },{ 
-    id:"email", 
-    name: "email", 
-    type: "email", 
-    placeholder: "Email" 
+  // },{ 
+  //   id:"email", 
+  //   name: "email", 
+  //   type: "email", 
+  //   placeholder: "Email" 
   },{ 
     id: "telefone",
     name: "telefone",
