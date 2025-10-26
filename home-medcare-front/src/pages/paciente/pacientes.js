@@ -185,12 +185,12 @@ const PacientesPage = () => {
                     <Edit onClick={() => handleEdit(p)} />
                   </td>
                   <td>
-                    <Delete 
+                    <Delete
                       endpoint={`/paciente/delete/${p.id}`}
                       onSuccess={() => {
                         handleSuccess();
                       }}
-                      />
+                    />
                   </td>
                 </tr>
               ))
