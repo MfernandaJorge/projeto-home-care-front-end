@@ -43,7 +43,7 @@ const PacientesPage = () => {
     }
 
     if (name === "documento") {
-      const digits = String(value).replace(/\D/g, "");
+      const digits = String(value).replace(/\D/g, "").slice(0, 14);
       setFormData({
         ...formData,
         [name]: digits
