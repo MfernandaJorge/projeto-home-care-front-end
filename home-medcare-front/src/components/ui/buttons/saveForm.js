@@ -63,9 +63,12 @@ const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
   }
 
   return (
-    <button type="button" onClick={handleClick}>
-      <FiSave /> Salvar
-    </button>
+    <div className="form-actions">
+      <button type="submit" onClick={handleClick}>
+        Salvar
+      </button>
+    </div>
+    
   );
 };
 

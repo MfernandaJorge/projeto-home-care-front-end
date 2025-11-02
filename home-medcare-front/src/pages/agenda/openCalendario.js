@@ -17,8 +17,6 @@ const OpenCalendario = ({ onToggle }) => {
   return (
     <button onClick={handleToggleForm}>
       {calendario ? <FiX /> : <FiCalendar />}
-      {/* Alternativa: mostrar FiCalendarPlus quando fechado */}
-      {/* {calendario ? <FiX /> : <FiCalendarPlus />} */}
     </button>
   );
 };

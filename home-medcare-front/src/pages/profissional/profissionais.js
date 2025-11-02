@@ -1,5 +1,5 @@
 /**
- * Página de profissionais.
+ * Página de Profissionais.
  */
 
 import OpenForm from "../../components/ui/buttons/openForm";
@@ -8,13 +8,11 @@ import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
 import Pagination from "../../components/ui/pagination/pagination";
 
-
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
 import { maskDocs } from "../../utils/formatFieds/maskDocs";
 
 import { profissionalFields } from "../../configs/fields/profissionalFields";
 import { useState, useEffect } from "react";
-
 import api from "../../services/api";
 
 const ProfissionaisPage = () => {
@@ -33,31 +31,21 @@ const ProfissionaisPage = () => {
     const { name, value } = e.target;
 
     if (name === "telefone") {
-      // const digits = String(value).replace(/\D/g, "").slice(0, 11); -- TELEFONE COM DDD
       const digits = String(value).replace(/\D/g, "").slice(0, 9);
-      setFormData({
-        ...formData,
-        [name]: digits
-      });
+      setFormData({ ...formData, [name]: digits });
       return;
     }
 
     if (name === "documento") {
       const digits = String(value).replace(/\D/g, "").slice(0, 14);
-      setFormData({
-        ...formData,
-        [name]: digits
-      });
+      setFormData({ ...formData, [name]: digits });
       return;
     }
 
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // lista de profissionais
+  // Lista de profissionais
   const [profissionais, setProfissionais] = useState([]);
   useEffect(() => {
     api
@@ -68,21 +56,22 @@ const ProfissionaisPage = () => {
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 10;
 
-  // calcula índices para exibir apenas os registros da página atual
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProfissionais = profissionais.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleSuccess = () => {
     setFormData(initialForm);
-    setFormPadrao(false);
+    setFormPadrao(false); // <- volta para tabela
+    setEditMode(false);
+    setEditId(null);
     api.get("/profissional/all").then((res) => setProfissionais(res.data));
   };
 
   const handleEdit = (profissional) => {
-    setFormPadrao(true);
+    setFormPadrao(true); // <- abre formulário
     setEditMode(true);
     setEditId(profissional.id);
 
@@ -103,110 +92,148 @@ const ProfissionaisPage = () => {
 
   return (
     <div className="pagina-padrao">
-      <OpenForm onToggle={setFormPadrao} />
+      {/* Botão de abrir/fechar formulário */}
+      <OpenForm
+        onToggle={() => {
+          setFormPadrao(!formPadrao);
+          setEditMode(false);
+          setEditId(null);
+          setFormData(initialForm);
+        }}
+      />
 
-      {formPadrao && (
-        <div className="form-padrao">
+      {/* Exibe formulário OU tabela */}
+      {formPadrao ? (
+        <form className="form-padrao">
           <h3>{editMode ? "Editar Profissional" : "Cadastrar Profissional"}</h3>
 
-          <form>
+          <div className="form-grid">
             {profissionalFields.map((field) => (
-              <input
-                key={field.id}
-                type={field.type}
-                name={field.id}
-                placeholder={field.placeholder}
-                value={formData[field.id]}
-                onChange={handleChange}
-              />
-            ))}
+              <div className="form-field" key={field.id}>
+                <label htmlFor={field.id}>{field.placeholder}</label>
 
-            <SaveForm
-              endpoint={
-                editMode
-                  ? `profissional/update/${editId}`
-                  : "/profissional/cadastro"
-              }
-              data={{
-                nome: formData.nome,
-                documento: formData.documento,
-                email: formData.email,
-                telefone: Number(String(formData.telefone).replace(/\D/g, "")) || null,
-                endereco: {
-                  logradouro: formData.logradouro,
-                  bairro: formData.bairro,
-                  cidade: formData.cidade,
-                  estado: formData.estado,
-                  cep: formData.cep,
-                  numero: Number(formData.numero) || null,
-                },
-                ocupacao: formData.ocupacao ? Number(formData.ocupacao) : null
-              }}
-              onSuccess={() => {
-                handleSuccess();
-                setEditMode(false);
-                setEditId(null);
-              }}
-            />
-          </form>
+                {/* Renderização condicional: input ou select */}
+                {field.type === "select" ? (
+                  <select
+                    id={field.id}
+                    name={field.id}
+                    value={formData[field.id] || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Selecione...</option>
+                    {field.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id={field.id}
+                    type={field.type}
+                    name={field.id}
+                    placeholder={field.placeholder}
+                    value={formData[field.id] || ""}
+                    onChange={handleChange}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <SaveForm
+            endpoint={
+              editMode
+                ? `/profissional/update/${editId}`
+                : "/profissional/cadastro"
+            }
+            data={{
+              nome: formData.nome,
+              documento: formData.documento,
+              email: formData.email,
+              telefone:
+                Number(String(formData.telefone).replace(/\D/g, "")) || null,
+              endereco: {
+                logradouro: formData.logradouro,
+                bairro: formData.bairro,
+                cidade: formData.cidade,
+                estado: formData.estado,
+                cep: formData.cep,
+                numero: Number(formData.numero) || null,
+              },
+              ocupacao: formData.ocupacao
+                ? Number(formData.ocupacao)
+                : null,
+            }}
+            onSuccess={handleSuccess}
+          />
+        </form>
+      ) : (
+        <div className="table-padrao">
+          <h3>Profissionais</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Documento</th>
+                <th>Telefone</th>
+                {/* <th>Email</th> */}
+                <th>Endereço</th>
+                <th>Ocupação</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {currentProfissionais.length > 0 ? (
+                currentProfissionais.map((p, index) => {
+                  // 🔍 Busca a opção de ocupação correspondente
+                  const ocupacaoField = profissionalFields.find(f => f.id === "ocupacao");
+                  const ocupacaoLabel =
+                    ocupacaoField?.options.find(opt => opt.value === String(p.ocupacao))
+                      ?.label || "—";
+
+                  return (
+                    <tr key={index}>
+                      <td>{p.nome}</td>
+                      <td>{maskDocs(p.documento)}</td>
+                      <td>{maskTelefone(p.telefone)}</td>
+                      {/* <td>{p.email}</td> */}
+                      <td>
+                        {p.endereco?.logradouro}, {p.endereco?.numero},{" "}
+                        {p.endereco?.bairro}, {p.endereco?.cidade}-
+                        {p.endereco?.estado}, CEP {p.endereco?.cep}
+                      </td>
+                      <td>{ocupacaoLabel}</td>
+                      <td>
+                        <Edit onClick={() => handleEdit(p)} />
+                      </td>
+                      <td>
+                        <Delete
+                          endpoint={`/profissional/delete/${p.id}`}
+                          onSuccess={handleSuccess}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="7">Nenhum profissional cadastrado.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          <Pagination
+            totalItems={profissionais.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
-
-      <div className="table-padrao">
-        <h3>Profissionais</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Documento</th>
-              <th>Telefone</th>
-              {/* <th>Email</th> */}
-              <th>Endereço</th>
-              <th>Ocupação</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {currentProfissionais.length > 0 ? (
-              currentProfissionais.map((p, index) => (
-                <tr key={index}>
-                  <td>{p.nome}</td>
-                  <td>{maskDocs(p.documento)}</td>
-                  <td>{maskTelefone(p.telefone)}</td>
-                  {/* <td>{p.email}</td> */}
-                  <td>
-                    {p.endereco?.logradouro}, {p.endereco?.numero},{" "}
-                    {p.endereco?.bairro}, {p.endereco?.cidade}-
-                    {p.endereco?.estado}, CEP {p.endereco?.cep}
-                  </td>
-                  <td>{p.ocupacao}</td>
-                  <td>
-                    <Edit onClick={() => handleEdit(p)} />
-                  </td>
-                  <td>
-                    <Delete
-                      endpoint={`/profissional/delete/${p.id}`}
-                      onSuccess={() => {handleSuccess();}}
-                    />
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7">Nenhum profissional cadastrado.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <Pagination
-          totalItems={profissionais.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
-      </div>
     </div>
   );
 };

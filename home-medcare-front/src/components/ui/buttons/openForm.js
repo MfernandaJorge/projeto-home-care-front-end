@@ -15,7 +15,7 @@ const OpenForm = ({ onToggle }) => {
   }
 
   return (
-    <button onClick={handleToggleForm}>
+    <button className="open-form-btn" onClick={handleToggleForm}>
       {formPadrao ? <FiX /> : <FiPlus />}
     </button>
   );

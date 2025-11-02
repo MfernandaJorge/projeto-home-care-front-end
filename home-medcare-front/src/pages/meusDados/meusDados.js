@@ -28,81 +28,36 @@ const MeusDadosPage = () => {
 
   return (
     <div className="pagina-padrao">
-      {formPadrao ? (
-        <div className="form-padrao">
+      {formPadrao && (
+        <form className="form-padrao">
           <h3>Editar Meus Dados</h3>
-
-          <form>
+          <div className="form-grid">
             {meusDadosFields.map((field) => (
-              <input
-                key={field.id}
-                type={field.type}
-                name={field.id}
-                placeholder={field.placeholder}
-                value={formData[field.id] || ""}
-                onChange={handleChange}
-              />
+              <div className="form-field" key={field.id}>
+                <label htmlFor={field.id}>{field.placeholder}</label>
+                <input
+                  id={field.id}
+                  type={field.type}
+                  name={field.id}
+                  placeholder={field.placeholder}
+                  value={formData[field.id]}
+                  onChange={handleChange}
+                />
+              </div>
             ))}
+          </div>
 
-            <SaveForm
-              endpoint={"/meusDados/update/"}
-              data={{
-                razao_social: formData.razao_social || "",
-                cnpj: formData.cnpj || "",
-                nome_responsavel: formData.nome_responsavel || "",
-                documento_responsavel: formData.documento_responsavel || "",
-              }}
-              onSuccess={handleSuccess}
-            />
-
-            <button
-              type="button"
-              className="botao-secundario"
-              onClick={() => setFormPadrao(false)}
-            >
-              Editar usuário e senha
-            </button>
-          </form>
-        </div>
-      ) : (
-        <div className="form-padrao">
-          <h3>Alterar Usuário e Senha</h3>
-
-          <form>
-            <input
-              type="text"
-              name="usuario"
-              placeholder="Novo usuário"
-              value={formData.usuario || ""}
-              onChange={handleChange}
-            />
-
-            <input
-              type="password"
-              name="senha"
-              placeholder="Nova senha"
-              value={formData.senha || ""}
-              onChange={handleChange}
-            />
-
-            <SaveForm
-              endpoint={"/meusDados/updateLogin"}
-              data={{
-                usuario: formData.usuario || "",
-                senha: formData.senha || "",
-              }}
-              onSuccess={handleSuccess}
-            />
-
-            <button
-              type="button"
-              className="botao-voltar"
-              onClick={() => setFormPadrao(true)}
-            >
-              Voltar
-            </button>
-          </form>
-        </div>
+          <SaveForm
+            endpoint={"/meusDados/update/"}
+            data={{
+              razao_social: formData.razao_social || "",
+              cnpj: formData.cnpj || "",
+              nome_responsavel: formData.nome_responsavel || "",
+              documento_responsavel: formData.documento_responsavel || "",
+            }}
+            onSuccess={handleSuccess}
+          />
+        </form>
       )}
     </div>
   );
