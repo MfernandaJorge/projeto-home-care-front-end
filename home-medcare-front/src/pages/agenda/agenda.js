@@ -3,8 +3,8 @@
  */
 
 import OpenForm from "../../components/ui/buttons/openForm";
-import Edit from "../../components/ui/buttons/edit";
-import Delete from "../../components/ui/buttons/delete";
+import Concluir from "../../components/ui/buttons/concluir";
+import Cancelar from "../../components/ui/buttons/cancelar";
 import SaveForm from "../../components/ui/buttons/saveForm";
 import Pagination from "../../components/ui/pagination/pagination";
 
@@ -20,7 +20,7 @@ const AgendaPage = () => {
 
   const [agenda, setAgenda] = useState([]);
   useEffect(() => {
-    api.get("/agendamento/agendados?dia=2025-11-11").then(res => setAgenda(res.data)).catch(err => console.error(err));
+    api.get("/agendamento/agendados?dia=2025-11-03").then(res => setAgenda(res.data)).catch(err => console.error(err));
   }, []);
 
   // Paginação
@@ -74,23 +74,7 @@ const AgendaPage = () => {
     setFormPadrao(false);
     setSelectedProfId("");
     setCurrentStep(0);
-    api.get("/agendamento/agendados?dia=2025-11-10").then(res => setAgenda(res.data));
-  };
-
-  const handleEdit = (item) => {
-    setFormPadrao(true);
-    setEditMode(true);
-    setEditId(item.id);
-    setSelectedProfId(String(item.id_profissional || ""));
-    setFormData({
-      id_profissional: item.id_profissional || "",
-      id_paciente: item.id_paciente || "",
-      complexidade: item.complexidade || "",
-      descricao: item.descricao || "",
-      data_agendamento: item.data_agendamento || "",
-      hora_agendamento: item.hora_agendamento || "",
-      status_agendamento: item.status_agendamento || ""
-    });
+    api.get("/agendamento/agendados?dia=2025-11-03").then(res => setAgenda(res.data));
   };
 
   const fetchSimulatedTimes = async () => {
@@ -413,8 +397,8 @@ const AgendaPage = () => {
                 <th>Data</th>
                 <th>Hora início</th>
                 <th>Hora término</th>
-                <th></th>
-                <th></th>
+                <th>Concluir</th>
+                <th>Cancelar</th>
               </tr>
             </thead>
             <tbody>
@@ -443,12 +427,14 @@ const AgendaPage = () => {
                       <td>{horaInicio}</td>
                       <td>{horaFim}</td>
                       <td>
-                        <Edit onClick={() => handleEdit(p)} />
+                        <Concluir 
+                          // onClick={() => handleConclused(p)} 
+                        />
                       </td>
                       <td>
-                        <Delete
-                          endpoint={`/agenda/delete/${p.id}`}
-                          onSuccess={handleSuccess}
+                        <Cancelar
+                          // endpoint={`/agenda/delete/${p.id}`}
+                          // onSuccess={handleCancel}
                         />
                       </td>
                     </tr>
@@ -470,7 +456,6 @@ const AgendaPage = () => {
           />
         </div>
       )}
-
     </div>
   );
 

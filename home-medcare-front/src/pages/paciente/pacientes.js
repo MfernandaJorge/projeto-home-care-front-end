@@ -161,8 +161,8 @@ const PacientesPage = () => {
                 <th>Telefone</th>
                 <th>Endereço</th>
                 <th>Data de Nascimento</th>
-                <th></th>
-                <th></th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>

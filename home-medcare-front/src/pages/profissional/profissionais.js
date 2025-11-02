@@ -180,8 +180,8 @@ const ProfissionaisPage = () => {
                 {/* <th>Email</th> */}
                 <th>Endereço</th>
                 <th>Ocupação</th>
-                <th></th>
-                <th></th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
 
