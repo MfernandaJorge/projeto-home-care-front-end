@@ -428,13 +428,22 @@ const AgendaPage = () => {
                       <td>{horaFim}</td>
                       <td>
                         <Concluir 
-                          // onClick={() => handleConclused(p)} 
+                            endpoint="/agendamento/concluir"
+                            agendamentoId={p.id}
+                            onSuccess={() => {
+                              alert(`Atendimento de ${p.paciente} concluído.`);
+                            }}
                         />
                       </td>
                       <td>
                         <Cancelar
-                          // endpoint={`/agenda/delete/${p.id}`}
-                          // onSuccess={handleCancel}
+                          endpoint={`/agendamento/cancelar`}
+                          agendamentoId={p.id}
+                          motivo="Não especificado."
+                          onSuccess={() => {
+                            alert(`Atendimento de ${p.paciente} cancelado.`);
+                            handleSuccess();
+                          }}
                         />
                       </td>
                     </tr>
@@ -442,7 +451,7 @@ const AgendaPage = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="7">Nenhum atendimento cadastrado.</td>
+                  <td colSpan="7">Nenhum atendimento <b>pendente</b>.</td>
                 </tr>
               )}
             </tbody>
