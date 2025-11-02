@@ -5,7 +5,12 @@
 import { FiCheckSquare } from "react-icons/fi";
 import api from "../../../services/api";
 
-const Concluir = ({ endpoint, onSuccess, onConclused, confirmMessage = "Tem certeza que deseja concluir este atendimento?" }) => {
+const Concluir = ({ 
+  endpoint, 
+  agendamentoId, 
+  onSuccess, 
+  confirmMessage = "Tem certeza que deseja concluir este atendimento?" 
+}) => {
   const handleConclused = async () => {
     if (!endpoint) {
       console.error("Endpoint não informado.");
@@ -16,18 +21,15 @@ const Concluir = ({ endpoint, onSuccess, onConclused, confirmMessage = "Tem cert
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      const response = await api.conclused(endpoint);
+      const response = await api.post(endpoint, { agendamentoId });
 
       if (onSuccess) {
         onSuccess(response.data);
-
       } else {
         alert("Atendimento concluído com sucesso!");
       }
-
-      if (onConclused) onConclused(); // executa callback se fornecida
     } catch (err) {
-      console.error("Erro ao deletar:", err);
+      console.error("Erro ao concluir:", err);
       alert("Erro ao concluir atendimento. Tente novamente.");
     }
   };
@@ -41,7 +43,7 @@ const Concluir = ({ endpoint, onSuccess, onConclused, confirmMessage = "Tem cert
         cursor: "pointer",
         color: "white",
       }}
-      title="Excluir registro"
+      title="Concluir atendimento"
     >
       <FiCheckSquare size={18} />
     </button>
