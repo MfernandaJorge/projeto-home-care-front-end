@@ -11,7 +11,7 @@ import {
   FiCalendar,
   FiUsers,
   FiUser,
-  FiSettings,
+  // FiSettings,
   FiBook
 } from "react-icons/fi";
 import "./styles/globals.css";
@@ -75,7 +75,7 @@ function App() {
                 <span>Profissionais</span>
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 className={currentPage === "meusDados" ? "active" : ""} 
                 onClick={() => setCurrentPage("meusDados")}
@@ -83,7 +83,7 @@ function App() {
                 <FiSettings className="icon" />
                 <span>Meus Dados</span>
               </button>
-            </li>
+            </li> */}
           </ul>
         </nav>
 
@@ -93,7 +93,7 @@ function App() {
           {currentPage === "agenda" && <AgendaPage />}
           {currentPage === "pacientes" && <PacientesPage />}
           {currentPage === "profissionais" && <ProfissionaisPage />}
-          {currentPage === "meusDados" && <MeusDadosPage />}
+          {/* {currentPage === "meusDados" && <MeusDadosPage />} */}
         </main>
       </div>
     // </div>
