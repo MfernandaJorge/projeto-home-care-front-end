@@ -59,7 +59,7 @@ function App() {
             </li>
             <li>
               <button 
-                className={currentPage === "pacinetes" ? "active" : ""} 
+                className={currentPage === "pacientes" ? "active" : ""} 
                 onClick={() => setCurrentPage("pacientes")}
               >
                 <FiUsers className="icon" />
