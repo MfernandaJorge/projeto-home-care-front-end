@@ -19,9 +19,17 @@ const AgendaPage = () => {
   const [editId, setEditId] = useState(null);
 
   const [agenda, setAgenda] = useState([]);
+
+  const [dataSelecionada, setDataSelecionada] = useState(
+    new Date().toISOString().split("T")[0] // data de hoje
+  );
+
   useEffect(() => {
-    api.get("/agendamento/agendados?dia=2025-11-03").then(res => setAgenda(res.data)).catch(err => console.error(err));
-  }, []);
+    api
+      .get(`/agendamento/agendados?dia=${dataSelecionada}`)
+      .then(res => setAgenda(res.data))
+      .catch(err => console.error(err));
+  }, [dataSelecionada]);
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,7 +82,9 @@ const AgendaPage = () => {
     setFormPadrao(false);
     setSelectedProfId("");
     setCurrentStep(0);
-    api.get("/agendamento/agendados?dia=2025-11-03").then(res => setAgenda(res.data));
+    // api
+    //   .get("/agendamento/agendados?dia=2025-11-03")
+    //   .then(res => setAgenda(res.data));
   };
 
   const fetchSimulatedTimes = async () => {
@@ -383,6 +393,22 @@ const AgendaPage = () => {
             </form>
           )}
         </>
+      )}
+
+      {/* CAMPO DE SELEÇÃO DE DATA */}
+      {!formPadrao && (
+        <div className="form-group">
+          <div className="campo-data">
+            <label style={{ marginRight: "8px", fontWeight: "bold" }}>
+              Selecione a data:
+            </label>
+            <input
+              type="date"
+              value={dataSelecionada}
+              onChange={(e) => setDataSelecionada(e.target.value)}
+            />
+          </div>
+        </div>
       )}
 
       {/* TABELA */}
