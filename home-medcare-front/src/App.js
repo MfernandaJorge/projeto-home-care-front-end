@@ -25,10 +25,37 @@ import CalendarioPage from "./pages/calendario/calendario";
 function App() {
   const [menuAberto, setMenuAberto] = useState(true);
   const [currentPage, setCurrentPage] = useState("calendario");
+  const [usuario, setUsuario] = useState(null); // estado do usuário logado
+
+  // Recupera usuário salvo no localStorage
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+
+    if (savedUser && savedUser !== "undefined") {
+      try {
+        setUsuario(JSON.parse(savedUser));
+      } catch (err) {
+        console.error("Erro ao ler usuário salvo:", err);
+        localStorage.removeItem("user"); // limpa valor inválido
+      }
+    }
+  }, []);
 
   function handleToggleMenu() {
     setMenuAberto(!menuAberto);
   }
+
+  if (!usuario) {
+    // se não logado, mostrar login
+    return <LoginPage onLoginSuccess={setUsuario} />;
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUsuario(null);
+  }
+
 
   return (
     <div className="App">
