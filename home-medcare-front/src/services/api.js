@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const host = window.location.hostname; // Captura o host atual (pode ser localhost, IP ou domínio).
+
 const api = axios.create({
-  baseURL: 'http://localhost:8080/', 
+  baseURL: `http://${host}:8080/api`, // Monta dinamicamente a URL base da API.
 });
 
 api.interceptors.request.use((config) => {
