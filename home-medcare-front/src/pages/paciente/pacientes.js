@@ -108,21 +108,39 @@ const PacientesPage = () => {
       {formPadrao ? (
         <form className="form-padrao">
           <h3>{editMode ? "Editar Paciente" : "Cadastrar Paciente"}</h3>
+
           <div className="form-grid">
-          {pacienteFields.map((field) => (
-            <div className="form-field" key={field.id}>
-              <label htmlFor={field.id}>{field.placeholder}</label>
-              <input
-                id={field.id}
-                type={field.type}
-                name={field.id}
-                placeholder={field.placeholder}
-                value={formData[field.id]}
-                onChange={handleChange}
-              />
-            </div>
-          ))}
+            {pacienteFields.map((field) => (
+              <div className="form-field" key={field.id}>
+                <label htmlFor={field.id}>{field.placeholder}</label>
+
+                {field.type === "select" ? (
+                  <select
+                    id={field.id}
+                    name={field.id}
+                    value={formData[field.id] || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Selecione...</option>
+                    {field.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id={field.id}
+                    type={field.type}
+                    name={field.id}
+                    placeholder={field.placeholder}
+                    value={formData[field.id] || ""}
+                    onChange={handleChange}
+                  />
+                )}
           </div>
+          ))}
+        </div>
 
           <SaveForm
             endpoint={
