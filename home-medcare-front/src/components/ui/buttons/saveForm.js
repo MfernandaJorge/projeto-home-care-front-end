@@ -1,8 +1,7 @@
 /**
- * Componente: Botão para salvar formulário (genérico).
+ * Componente: Botão para salvar formulário.
  */
 
-import { FiSave } from "react-icons/fi";
 import api from "../../../services/api"; // ajuste o path conforme sua estrutura
 
 const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
