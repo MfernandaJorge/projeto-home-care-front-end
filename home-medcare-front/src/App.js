@@ -22,12 +22,13 @@ import PacientesPage from "./pages/paciente/pacientes";
 import ProfissionaisPage from "./pages/profissional/profissionais";
 import CalendarioPage from "./pages/calendario/calendario";
 
-function App() {
+function App() 
+{
   const [menuAberto, setMenuAberto] = useState(true);
   const [currentPage, setCurrentPage] = useState("calendario");
-  const [usuario, setUsuario] = useState(null); // estado do usuário logado
+  const [usuario, setUsuario] = useState(null); // estado do usuário logado.
 
-  // Recupera usuário salvo no localStorage
+  // Recupera usuário salvo no localStorage.
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
 
@@ -36,7 +37,7 @@ function App() {
         setUsuario(JSON.parse(savedUser));
       } catch (err) {
         console.error("Erro ao ler usuário salvo:", err);
-        localStorage.removeItem("user"); // limpa valor inválido
+        localStorage.removeItem("user");
       }
     }
   }, []);
@@ -46,7 +47,6 @@ function App() {
   }
 
   if (!usuario) {
-    // se não logado, mostrar login
     return <LoginPage onLoginSuccess={setUsuario} />;
   }
 
@@ -55,7 +55,6 @@ function App() {
     localStorage.removeItem("user");
     setUsuario(null);
   }
-
 
   return (
     <div className="App">
