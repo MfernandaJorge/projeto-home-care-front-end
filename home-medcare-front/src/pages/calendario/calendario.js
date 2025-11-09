@@ -4,7 +4,6 @@ import { formatDate } from "../../utils/formatFieds/formatDate";
 import api from "../../services/api";
 
 export default function Calendario() {
-  // Formata data atual (YYYY-MM-DD)
   function getTodayKey() {
     const hoje = new Date();
     const y = hoje.getFullYear();
@@ -13,7 +12,6 @@ export default function Calendario() {
     return `${y}-${m}-${d}`;
   }
 
-  // Estados
   const [current, setCurrent] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -22,20 +20,18 @@ export default function Calendario() {
   const [eventsByDate, setEventsByDate] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Função auxiliar
   function keyForDay(d) {
     const year = current.getFullYear();
     const month = current.getMonth();
     return `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   }
 
-  // 🔥 Busca os agendamentos ao selecionar um dia
   useEffect(() => {
-    async function fetchAgenda() {
+    function fetchAgenda() {
       if (!selectedDateKey) return;
       setLoading(true);
       try {
-        const response = await api.get(`/agendamento/agendados?dia=${selectedDateKey}`);
+        const response = api.get(`/agendamento/agendados?dia=${selectedDateKey}`);
         const data = response.data || [];
 
         // Atualiza o mapa de eventos
@@ -53,7 +49,6 @@ export default function Calendario() {
     fetchAgenda();
   }, [selectedDateKey]);
 
-  // Renderização
   const year = current.getFullYear();
   const month = current.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
