@@ -27,6 +27,12 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const url = error.config?.url;
+
+    if (url?.includes("/auth/login")) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 403) {
       logout();
     }
