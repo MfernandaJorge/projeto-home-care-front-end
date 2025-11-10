@@ -1,6 +1,5 @@
 /**
  * Componente: Botão genérico para cancelar atendimentos.
- * Uso:
  */
 
 import { FiXCircle } from "react-icons/fi";
@@ -9,12 +8,15 @@ import api from "../../../services/api";
 const Cancelar = ({ 
   endpoint, 
   agendamentoId, 
-  motivo, 
+  motivo: motivoProp,
   onSuccess, 
   onCancel, 
-  confirmMessage = "Tem certeza que deseja cancelar este atendimento?" 
+  confirmMessage = "Tem certeza que deseja cancelar este atendimento?",
+  disabled = false,
 }) => {
   const handleCancel = async () => {
+    if (disabled) return;
+
     if (!endpoint) {
       console.error("Endpoint não informado.");
       alert("Erro interno: endpoint não informado.");
@@ -22,12 +24,11 @@ const Cancelar = ({
     }
 
     const confirmed = window.confirm(confirmMessage);
-
     if (!confirmed) return;
 
-    const motivo = window.prompt("Informe o motivo do cancelamento:");
+    let motivoFinal = motivoProp || window.prompt("Informe o motivo do cancelamento:");
 
-    if (!motivo || motivo.trim() === "") {
+    if (!motivoFinal || motivoFinal.trim() === "") {
       alert("Cancelamento abortado: é necessário informar um motivo.");
       return;
     }
@@ -35,7 +36,7 @@ const Cancelar = ({
     try {
       const response = await api.post(endpoint, {
         agendamentoId,
-        motivo
+        motivo: motivoFinal,
       });
 
       if (onSuccess) {
@@ -55,13 +56,15 @@ const Cancelar = ({
   return (
     <button
       onClick={handleCancel}
+      disabled={disabled}
       style={{
         background: "transparent",
         border: "none",
-        cursor: "pointer",
-        color: "white",
+        cursor: disabled ? "not-allowed" : "pointer",
+        color: disabled ? "#999" : "white",
+        opacity: disabled ? 0.5 : 1,
       }}
-      title="Cancelar atendimento"
+      title={disabled ? "Ação indisponível" : "Cancelar atendimento"}
     >
       <FiXCircle size={18} />
     </button>

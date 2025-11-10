@@ -9,9 +9,12 @@ const Concluir = ({
   endpoint, 
   agendamentoId, 
   onSuccess, 
-  confirmMessage = "Tem certeza que deseja concluir este atendimento?" 
+  confirmMessage = "Tem certeza que deseja concluir este atendimento?",
+  disabled = false,
 }) => {
   const handleConclused = async () => {
+    if (disabled) return;
+
     if (!endpoint) {
       console.error("Endpoint não informado.");
       alert("Erro interno: endpoint não informado.");
@@ -37,13 +40,15 @@ const Concluir = ({
   return (
     <button
       onClick={handleConclused}
+      disabled={disabled}
       style={{
         background: "transparent",
         border: "none",
-        cursor: "pointer",
-        color: "white",
+        cursor: disabled ? "not-allowed" : "pointer",
+        color: disabled ? "#6e6b6bc8" : "white",
+        opacity: disabled ? 0.5 : 1
       }}
-      title="Concluir atendimento"
+      title={disabled ? "Ação indisponível" : "Concluir atendimento"}
     >
       <FiCheckSquare size={18} />
     </button>
