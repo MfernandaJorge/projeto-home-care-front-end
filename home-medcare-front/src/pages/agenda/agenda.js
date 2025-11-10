@@ -24,11 +24,20 @@ const AgendaPage = () => {
     new Date().toISOString().split("T")[0] // data de hoje
   );
 
+  const fetchAgenda = async (data = dataSelecionada) => {
+    setLoadingAgenda(true);
+    try {
+      const res = await api.get(`/agendamento/agendados?dia=${data}`);
+      setAgenda(res.data || []);
+    } catch (err) {
+      console.error("Erro ao buscar agenda:", err);
+    } finally {
+      setLoadingAgenda(false);
+    }
+  };
+
   useEffect(() => {
-    api
-      .get(`/agendamento/agendados?dia=${dataSelecionada}`)
-      .then(res => setAgenda(res.data))
-      .catch(err => console.error(err));
+    fetchAgenda(dataSelecionada);
   }, [dataSelecionada]);
 
   // Paginação
@@ -45,67 +54,124 @@ const AgendaPage = () => {
   const [selectedSimulatedTime, setSelectedSimulatedTime] = useState("");
   const [availableTimes, setAvailableTimes] = useState([]);
 
-  const possibleTimes = ["00:00","00:30","01:00","01:30","02:00","02:30","03:00","03:30","04:00","04:30","05:00","05:30","06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"];
+  const possibleTimes = [
+    "00:00","00:30","01:00","01:30","02:00","02:30","03:00","03:30","04:00","04:30",
+    "05:00","05:30","06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30",
+    "10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30",
+    "15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30",
+    "20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"
+  ];
 
-  const initialForm = agendaFields.reduce((acc, field) => { acc[field.id] = ""; return acc; }, {});
+  const initialForm = agendaFields.reduce((acc, field) => {
+    acc[field.id] = "";
+    return acc;
+  }, {});
   const [formData, setFormData] = useState(initialForm);
+
+  const [loadingAgenda, setLoadingAgenda] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   useEffect(() => {
-    if (!selectedProfId) { setAvailableTimes(possibleTimes); return; }
+    if (!selectedProfId) {
+      setAvailableTimes(possibleTimes);
+      return;
+    }
     const dateKey = (formData.data_agendamento || "").split("T")[0];
-    const booked = agenda.filter(a => String(a.id_profissional) === String(selectedProfId))
-      .filter(a => dateKey ? (a.data_agendamento || "").split("T")[0] === dateKey : true)
-      .map(a => String(a.hora_agendamento || "").trim());
-    setAvailableTimes(possibleTimes.filter(t => !booked.includes(t)));
+    const booked = agenda
+      .filter((a) => String(a.id_profissional) === String(selectedProfId))
+      .filter((a) =>
+        dateKey ? (a.data_agendamento || "").split("T")[0] === dateKey : true
+      )
+      .map((a) => String(a.hora_agendamento || "").trim());
+    setAvailableTimes(possibleTimes.filter((t) => !booked.includes(t)));
   }, [selectedProfId, formData.data_agendamento, agenda]);
 
   const [profissionaisOptions, setProfissionaisOptions] = useState([]);
   const [pacientesOptions, setPacientesOptions] = useState([]);
 
   useEffect(() => {
-    api.get("/profissional/all").then(res => setProfissionaisOptions(res.data)).catch(err => console.error(err));
-    api.get("/paciente/all").then(res => setPacientesOptions(res.data)).catch(err => console.error(err));
+    api
+      .get("/profissional/all")
+      .then((res) => setProfissionaisOptions(res.data))
+      .catch((err) => console.error(err));
+    api
+      .get("/paciente/all")
+      .then((res) => setPacientesOptions(res.data))
+      .catch((err) => console.error(err));
   }, []);
 
-  const camposAgenda = agendaFields.map(field => {
-    if (field.id === "id_profissional") return { ...field, options: profissionaisOptions.map(p => ({ value: p.id, label: p.nome })) };
-    if (field.id === "id_paciente") return { ...field, options: pacientesOptions.map(p => ({ value: p.id, label: p.nome })) };
+  const camposAgenda = agendaFields.map((field) => {
+    if (field.id === "id_profissional")
+      return {
+        ...field,
+        options: profissionaisOptions.map((p) => ({
+          value: p.id,
+          label: p.nome,
+        })),
+      };
+    if (field.id === "id_paciente")
+      return {
+        ...field,
+        options: pacientesOptions.map((p) => ({
+          value: p.id,
+          label: p.nome,
+        })),
+      };
     return field;
   });
 
   const handleSuccess = () => {
-    setFormData(initialForm);
+    setFormData({});
     setFormPadrao(false);
     setSelectedProfId("");
     setCurrentStep(0);
-    // api
-    //   .get("/agendamento/agendados?dia=2025-11-03")
-    //   .then(res => setAgenda(res.data));
+    fetchAgenda(dataSelecionada);
   };
 
   const fetchSimulatedTimes = async () => {
-    if (!formData.data_agendamento || !formData.hora_agendamento || !formData.id_paciente) return;
+    if (
+      !formData.data_agendamento ||
+      !formData.hora_agendamento ||
+      !formData.id_paciente
+    )
+      return;
     try {
       const payload = {
         pacienteId: Number(formData.id_paciente),
         profissionalId: Number(formData.id_profissional) || null,
         tipoAtendimento: Number(formData.tipoAtendimento) || 2,
         diaDesejado: formData.data_agendamento || "",
-        horaDesejada: formData.hora_agendamento.includes(":") && formData.hora_agendamento.length === 5 ? `${formData.hora_agendamento}:00` : formData.hora_agendamento,
-        diasSimulacao: 2
+        horaDesejada:
+          formData.hora_agendamento.includes(":") &&
+          formData.hora_agendamento.length === 5
+            ? `${formData.hora_agendamento}:00`
+            : formData.hora_agendamento,
+        diasSimulacao: 2,
       };
-  
+
       const res = await api.post("/agendamento/simular", payload);
-      setSimulatedTimes(res.data || []);
+      const data = res.data || [];
+
+      if (!data.length) {
+        alert("O profissional selecionado não está disponível neste horário.");
+        setCurrentStep(2);
+        return;
+      }
+
+      setSimulatedTimes(data);
     } catch (err) {
       console.error(err);
       alert("Erro ao buscar horários disponíveis.");
     }
   };
+
+  function parseDateLocal(dateStr) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
 
   return (
     <div className="pagina-padrao">
@@ -130,19 +196,23 @@ const AgendaPage = () => {
 
             {/* Cabeçalho dos steps */}
             <div className="steps-header">
-              {["Profissional", "Data e Hora", "Paciente", "Simulação", "Resumo"].map(
-                (label, index) => (
-                  <div
-                    key={index}
-                    className={`step-item ${index === currentStep - 1 ? "active" : ""} ${
-                      index < currentStep - 1 ? "completed" : ""
-                    }`}
-                  >
-                    <div className="step-circle">{index + 1}</div>
-                    <span className="step-label">{label}</span>
-                  </div>
-                )
-              )}
+              {[
+                "Profissional",
+                "Data e Hora",
+                "Paciente",
+                "Simulação",
+                "Resumo",
+              ].map((label, index) => (
+                <div
+                  key={index}
+                  className={`step-item ${
+                    index === currentStep - 1 ? "active" : ""
+                  } ${index < currentStep - 1 ? "completed" : ""}`}
+                >
+                  <div className="step-circle">{index + 1}</div>
+                  <span className="step-label">{label}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -151,10 +221,16 @@ const AgendaPage = () => {
             <div className="busca-opcoes form-padrao">
               <p>Há preferência por profissional?</p>
               <div className="form-actions">
-                <button className="btn-avancar" onClick={() => setCurrentStep(1)}>
+                <button
+                  className="btn-avancar"
+                  onClick={() => setCurrentStep(1)}
+                >
                   Sim
                 </button>
-                <button className="btn-avancar" onClick={() => setCurrentStep(2)}>
+                <button
+                  className="btn-avancar"
+                  onClick={() => setCurrentStep(2)}
+                >
                   Não
                 </button>
               </div>
@@ -178,13 +254,17 @@ const AgendaPage = () => {
               </select>
 
               <div className="form-actions">
-                <button className="btn-voltar" onClick={() => setCurrentStep(0)}>
+                <button
+                  className="btn-voltar"
+                  onClick={() => setCurrentStep(0)}
+                >
                   Voltar
                 </button>
                 <button
                   className="btn-avancar"
                   onClick={() => {
-                    if (!selectedProfId) return alert("Selecione um profissional.");
+                    if (!selectedProfId)
+                      return alert("Selecione um profissional.");
                     setFormData({ ...formData, id_profissional: selectedProfId });
                     setCurrentStep(2);
                   }}
@@ -199,6 +279,7 @@ const AgendaPage = () => {
           {currentStep === 2 && (
             <div className="busca-opcoes form-padrao">
               <p>Escolha a data e o horário:</p>
+
               <input
                 type="date"
                 value={formData.data_agendamento || ""}
@@ -206,6 +287,7 @@ const AgendaPage = () => {
                   setFormData({ ...formData, data_agendamento: e.target.value })
                 }
               />
+
               <select
                 value={formData.hora_agendamento || ""}
                 onChange={(e) =>
@@ -221,14 +303,51 @@ const AgendaPage = () => {
               </select>
 
               <div className="form-actions">
-                <button className="btn-voltar" onClick={() => setCurrentStep(1)}>
+                <button
+                  className="btn-voltar"
+                  onClick={() => setCurrentStep(1)}
+                >
                   Voltar
                 </button>
+
                 <button
                   className="btn-avancar"
                   onClick={() => {
-                    if (!formData.data_agendamento || !formData.hora_agendamento)
+                    const { data_agendamento, hora_agendamento } = formData;
+
+                    if (!data_agendamento || !hora_agendamento)
                       return alert("Selecione data e hora.");
+
+                    // Combina data e hora e valida se é anterior ao momento atual
+                    const [year, month, day] = data_agendamento
+                      .split("-")
+                      .map(Number);
+                    const [hour, minute] = hora_agendamento
+                      .split(":")
+                      .map(Number);
+                    const selectedDateTime = new Date(
+                      year,
+                      month - 1,
+                      day,
+                      hour,
+                      minute,
+                      0
+                    );
+
+                    const now = new Date();
+
+                    if (selectedDateTime < now) {
+                      alert(
+                        "A data e hora selecionadas não podem ser anteriores ao momento atual."
+                      );
+                      setFormData({
+                        ...formData,
+                        data_agendamento: "",
+                        hora_agendamento: "",
+                      });
+                      return;
+                    }
+
                     setCurrentStep(3);
                   }}
                 >
@@ -430,11 +549,10 @@ const AgendaPage = () => {
             <tbody>
               {currentAgenda.length > 0 ? (
                 currentAgenda.map((p, index) => {
-                  // Converte as datas
                   const dataInicio = new Date(p.inicio);
                   const dataFim = new Date(p.fim);
 
-                  // Formata data e hora
+                  // Formata data e hora.
                   const dataFormatada = dataInicio.toLocaleDateString("pt-BR");
                   const horaInicio = dataInicio.toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
@@ -445,20 +563,35 @@ const AgendaPage = () => {
                     minute: "2-digit",
                   });
 
+                  const isCancelado = p.cancelado === true;
+                  const isConcluido = p.concluido === true;
+
+                  let rowStyle = {};
+
+                  if (isCancelado) {
+                    rowStyle = { backgroundColor: "#4b2525ff" };
+
+                  } else {
+                    if (isConcluido) rowStyle = { backgroundColor: "#048a83ff" };
+                  }
+
+                  const disableButtons = isCancelado || isConcluido;
+
                   return (
-                    <tr key={index}>
+                    <tr key={index} style={rowStyle}>
                       <td>{p.paciente}</td>
                       <td>{p.profissional}</td>
                       <td>{dataFormatada}</td>
                       <td>{horaInicio}</td>
                       <td>{horaFim}</td>
                       <td>
-                        <Concluir 
-                            endpoint="/agendamento/concluir"
-                            agendamentoId={p.id}
-                            onSuccess={() => {
-                              alert(`Atendimento de ${p.paciente} concluído.`);
-                            }}
+                        <Concluir
+                          endpoint={`/agendamento/concluir/${p.id}`}
+                          onSuccess={() => {
+                            alert(`Atendimento de ${p.paciente} concluído.`);
+                            handleSuccess();
+                          }}
+                          disabled={disableButtons}
                         />
                       </td>
                       <td>
@@ -470,6 +603,7 @@ const AgendaPage = () => {
                             alert(`Atendimento de ${p.paciente} cancelado.`);
                             handleSuccess();
                           }}
+                          disabled={disableButtons}
                         />
                       </td>
                     </tr>
@@ -493,7 +627,6 @@ const AgendaPage = () => {
       )}
     </div>
   );
-
 };
 
 export default AgendaPage;
