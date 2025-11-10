@@ -27,14 +27,13 @@ export default function Calendario() {
   }
 
   useEffect(() => {
-    function fetchAgenda() {
+    async function fetchAgenda() {
       if (!selectedDateKey) return;
       setLoading(true);
       try {
-        const response = api.get(`/agendamento/agendados?dia=${selectedDateKey}`);
+        const response = await api.get(`/agendamento/agendados?dia=${selectedDateKey}`);
         const data = response.data || [];
 
-        // Atualiza o mapa de eventos
         setEventsByDate((prev) => ({
           ...prev,
           [selectedDateKey]: data,
@@ -76,11 +75,14 @@ export default function Calendario() {
         {weekDays.map((w) => (
           <div key={w} className="calendario-dia-header">{w}</div>
         ))}
+
         {cells.map((day, idx) => {
           if (!day) return <div key={idx} className="calendario-celula vazia" />;
+
           const k = keyForDay(day);
           const events = eventsByDate[k] || [];
           const isSelected = selectedDateKey === k;
+
           return (
             <div
               key={k}
@@ -124,7 +126,12 @@ export default function Calendario() {
                     minute: "2-digit",
                   })}
                 </strong>{" "}
-                — Paciente: {ev.paciente} — Profissional: {ev.profissional}
+                — Paciente: {ev.paciente} — Profissional: {ev.profissional}{" "}
+                {ev.cancelado
+                  ? "(Cancelado)"
+                  : ev.concluido
+                  ? "(Concluído)"
+                  : ""}
               </li>
             ))}
           </ul>
