@@ -27,9 +27,48 @@ export default function Calendario() {
   }
 
   useEffect(() => {
+    async function fetchMonthAgenda() {
+      const year = current.getFullYear();
+      const month = current.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      setLoading(true);
+
+      try {
+        const dateKeys = Array.from({ length: daysInMonth }, (_, i) => {
+          const day = String(i + 1).padStart(2, "0");
+          const monthStr = String(month + 1).padStart(2, "0");
+          return `${year}-${monthStr}-${day}`;
+        });
+
+        const responses = await Promise.all(
+          dateKeys.map((date) =>
+            api
+              .get(`/agendamento/agendados?dia=${date}`)
+              .then((res) => ({ date, data: res.data || [] }))
+              .catch(() => ({ date, data: [] })) // evita quebra se um dia falhar
+          )
+        );
+
+        const grouped = {};
+        responses.forEach(({ date, data }) => {
+          grouped[date] = data;
+        });
+
+        setEventsByDate(grouped);
+      } catch (err) {
+        console.error("Erro ao carregar agendamentos do mês:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMonthAgenda();
+  }, [current]);
+
+  useEffect(() => {
     async function fetchAgenda() {
       if (!selectedDateKey) return;
-      setLoading(true);
       try {
         const response = await api.get(`/agendamento/agendados?dia=${selectedDateKey}`);
         const data = response.data || [];
@@ -40,8 +79,6 @@ export default function Calendario() {
         }));
       } catch (err) {
         console.error("Erro ao carregar agendamentos:", err);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -107,7 +144,7 @@ export default function Calendario() {
             : "Selecione um dia"}
         </h4>
 
-        {loading ? (
+        {loading && Object.keys(eventsByDate).length === 0 ? (
           <div className="sem-eventos">Carregando...</div>
         ) : selectedDateKey && (eventsByDate[selectedDateKey] || []).length === 0 ? (
           <div className="sem-eventos">Nenhum atendimento neste dia.</div>
