@@ -44,6 +44,12 @@ const PacientesPage = () => {
       return;
     }
 
+    if (name === "cep") {
+      const digits = String(value).replace(/\D/g, "").slice(0, 8);
+      setFormData({ ...formData, [name]: digits });
+      return;
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
