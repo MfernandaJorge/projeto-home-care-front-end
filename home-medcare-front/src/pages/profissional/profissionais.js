@@ -87,6 +87,7 @@ const ProfissionaisPage = () => {
       email: profissional.email || "",
       telefone: String(profissional.telefone || ""),
       ocupacao: profissional.ocupacao || "",
+      jornadaId: profissional.jornadaId || "",
       logradouro: profissional.endereco?.logradouro || "",
       bairro: profissional.endereco?.bairro || "",
       cidade: profissional.endereco?.cidade || "",
@@ -170,6 +171,7 @@ const ProfissionaisPage = () => {
               ocupacao: formData.ocupacao
                 ? Number(formData.ocupacao)
                 : null,
+              jornadaId: formData.jornadaId
             }}
             onSuccess={handleSuccess}
           />
@@ -186,6 +188,7 @@ const ProfissionaisPage = () => {
                 {/* <th>Email</th> */}
                 <th>Endereço</th>
                 <th>Ocupação</th>
+                <th>Jornada</th>
                 <th>Editar</th>
                 <th>Excluir</th>
               </tr>
@@ -194,11 +197,13 @@ const ProfissionaisPage = () => {
             <tbody>
               {currentProfissionais.length > 0 ? (
                 currentProfissionais.map((p, index) => {
-                  // 🔍 Busca a opção de ocupação correspondente
                   const ocupacaoField = profissionalFields.find(f => f.id === "ocupacao");
-                  const ocupacaoLabel =
-                    ocupacaoField?.options.find(opt => opt.value === String(p.ocupacao))
-                      ?.label || "—";
+                  const ocupacaoLabel = ocupacaoField?.options.find(opt => opt.value === String(p.ocupacao))?.label || "—";
+                  const jornadaOptions = {
+                    1: "Seg à Sex - 07h às 17h",
+                    2: "Seg à Sex - 17h às 03h",
+                    3: "Sáb à Dom - 08h às 15h"
+                  };
 
                   return (
                     <tr key={index}>
@@ -212,6 +217,7 @@ const ProfissionaisPage = () => {
                         {p.endereco?.estado}, CEP {p.endereco?.cep}
                       </td>
                       <td>{ocupacaoLabel}</td>
+                      <td>{jornadaOptions[p.jornadaId] || "—"}</td>
                       <td>
                         <Edit onClick={() => handleEdit(p)} />
                       </td>

@@ -86,9 +86,20 @@ export const profissionalFields = [
     options: [
       { value: "1", label: "Médico" },
       { value: "2", label: "Enfermeiro" },
-      { value: "4", label: "Técnico de Enfermagem" },
+      { value: "3", label: "Técnico de Enfermagem" },
+      { value: "4", label: "Clínico Geral" },
       { value: "5", label: "Outro" }
     ],
     placeholder: "Ocupação" 
+  },{ 
+    id:"jornadaId", 
+    name: "jornadaId", 
+    type: "select",
+    options: [
+      { value: "1", label: "Seg à Sex - 07h às 17h" },
+      { value: "2", label: "Seg à Sex - 17h às 03h" },
+      { value: "3", label: "Sáb à Dom - 08h às 15h" }
+    ],
+    placeholder: "Jornada" 
   }
 ];

@@ -89,6 +89,11 @@ const AgendaPage = () => {
     setAvailableTimes(possibleTimes.filter((t) => !booked.includes(t)));
   }, [selectedProfId, formData.data_agendamento, agenda]);
 
+  const jornadaOptions = {
+    1: "Seg à Sex - 07h às 17h",
+    2: "Seg à Sex - 17h às 03h",
+    3: "Sáb à Dom - 08h às 15h"
+  };
   const [profissionaisOptions, setProfissionaisOptions] = useState([]);
   const [pacientesOptions, setPacientesOptions] = useState([]);
 
@@ -97,6 +102,7 @@ const AgendaPage = () => {
       .get("/profissional/all")
       .then((res) => setProfissionaisOptions(res.data))
       .catch((err) => console.error(err));
+
     api
       .get("/paciente/all")
       .then((res) => setPacientesOptions(res.data))
@@ -109,9 +115,10 @@ const AgendaPage = () => {
         ...field,
         options: profissionaisOptions.map((p) => ({
           value: p.id,
-          label: p.nome,
+          label: `${p.nome} — ${jornadaOptions[p.jornadaId] || ""}`,
         })),
       };
+
     if (field.id === "id_paciente")
       return {
         ...field,
@@ -120,6 +127,7 @@ const AgendaPage = () => {
           label: p.nome,
         })),
       };
+
     return field;
   });
 
@@ -248,7 +256,7 @@ const AgendaPage = () => {
                 <option value="">Selecione o profissional</option>
                 {profissionaisOptions.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.nome}
+                    {p.nome} — {jornadaOptions[p.jornadaId] || ""}
                   </option>
                 ))}
               </select>
@@ -429,6 +437,7 @@ const AgendaPage = () => {
                       ...formData,
                       data_agendamento: sim?.data,
                       hora_agendamento: selectedSimulatedTime,
+                      id_profissional: sim?.profissionalId || formData.id_profissional,
                     });
                     setCurrentStep(5);
                   }}
