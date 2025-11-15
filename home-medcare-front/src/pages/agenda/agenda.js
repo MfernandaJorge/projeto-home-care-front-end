@@ -156,15 +156,16 @@ const AgendaPage = () => {
           formData.hora_agendamento.includes(":") &&
           formData.hora_agendamento.length === 5
             ? `${formData.hora_agendamento}:00`
-            : formData.hora_agendamento,
-        diasSimulacao: 2,
+            : formData.hora_agendamento
       };
 
+      console.log('payload: ', payload);
       const res = await api.post("/agendamento/simular", payload);
       const data = res.data || [];
+      console.log('data: ', data);
 
       if (!data.length) {
-        alert("O profissional selecionado não está disponível neste horário.");
+        alert("Não há disponibilidade.  Favor, consultar a agenda, e selecionar outro horário.");
         setCurrentStep(2);
         return;
       }
@@ -383,6 +384,21 @@ const AgendaPage = () => {
                 ))}
               </select>
 
+              <select
+                name="complexidade"
+                value={formData.complexidade || ""}
+                onChange={handleChange}
+              >
+                <option value="">Selecione a complexidade</option>
+                {agendaFields
+                  .find((f) => f.id === "complexidade")
+                  ?.options?.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                ))}
+              </select>
+
               <div className="form-actions">
                 <button className="btn-voltar" onClick={() => setCurrentStep(2)}>
                   Voltar
@@ -392,6 +408,9 @@ const AgendaPage = () => {
                   onClick={() => {
                     if (!formData.id_paciente)
                       return alert("Selecione um paciente.");
+                    if (!formData.complexidade)
+                      return alert("Selecione a complexidade.");
+
                     fetchSimulatedTimes();
                     setCurrentStep(4);
                   }}
@@ -453,9 +472,7 @@ const AgendaPage = () => {
             <form className="busca-opcoes form-padrao">
               {camposAgenda
                 .filter((field) =>
-                  ["complexidade", "descricao", "status_agendamento"].includes(
-                    field.id
-                  )
+                  ["descricao", "status_agendamento"].includes(field.id)
                 )
                 .map((field) => {
                   if (field.type === "select") {
@@ -507,8 +524,7 @@ const AgendaPage = () => {
                       : null,
                     tipoAtendimento: Number(formData.complexidade),
                     diaDesejado: formData.data_agendamento,
-                    horaDesejada: formData.hora_agendamento,
-                    diasSimulacao: 1,
+                    horaDesejada: formData.hora_agendamento
                   }}
                   onSuccess={() => {
                     handleSuccess();

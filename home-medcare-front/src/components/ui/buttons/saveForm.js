@@ -2,7 +2,7 @@
  * Componente: Botão para salvar formulário.
  */
 
-import api from "../../../services/api"; // ajuste o path conforme sua estrutura
+import api from "../../../services/api";
 
 const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
   async function handleClick(e) {
@@ -14,14 +14,14 @@ const SaveForm = ({ endpoint, data, onSuccess, onError }) => {
       if (data.receita_medica instanceof File) {
         const formData = new FormData();
 
-        Object.entries(data).forEach(([key, value]) => {
-          if (key === "recceita_medica" && value) {
-            formData.append(key, value);
+        // Object.entries(data).forEach(([key, value]) => {
+        //   if (key === "recceita_medica" && value) {
+        //     formData.append(key, value);
 
-          } else {
-            formData.append(key, value);
-          }
-        });
+        //   } else {
+        //     formData.append(key, value);
+        //   }
+        // });
 
         if (endpoint.includes("update")) {
           response = await api.put(endpoint, formData, {
