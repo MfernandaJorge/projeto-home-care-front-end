@@ -7,6 +7,7 @@ import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
 import Pagination from "../../components/ui/pagination/pagination";
+import SearchBar from "../../components/searchBar/SearchBar";
 
 import { formatDate } from "../../utils/formatFieds/formatDate";
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
@@ -68,7 +69,24 @@ const PacientesPage = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentPacientes = paciente.slice(indexOfFirstItem, indexOfLastItem);
+
+  const [search, setSearch] = useState("");
+
+  // Filtragem por nome, documento ou telefone
+  const filteredPacientes = paciente.filter((p) => {
+    const termo = search.toLowerCase();
+    return (
+      p.nome?.toLowerCase().includes(termo) ||
+      String(p.documento || "").includes(termo) ||
+      String(p.telefone || "").includes(termo)
+    );
+  });
+
+  // Paginação baseada na lista filtrada
+  const currentPacientes = filteredPacientes.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const handleSuccess = () => {
     setFormData(initialForm);
@@ -176,6 +194,15 @@ const PacientesPage = () => {
       ) : (
         <div className="table-padrao">
           <h3>Pacientes</h3>
+          <SearchBar
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setCurrentPage(1); // volta pra primeira página ao digitar
+            }}
+            onSearch={() => setCurrentPage(1)}
+          />
+
           <table>
             <thead>
               <tr>
@@ -189,6 +216,7 @@ const PacientesPage = () => {
                 <th>Excluir</th>
               </tr>
             </thead>
+
             <tbody>
               {currentPacientes.length > 0 ? (
                 currentPacientes.map((p, index) => (
@@ -216,19 +244,21 @@ const PacientesPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8">Nenhum paciente cadastrado.</td>
+                  <td colSpan="8">Nenhum paciente encontrado.</td>
                 </tr>
               )}
             </tbody>
           </table>
 
+          {/* Paginação baseada na lista filtrada */}
           <Pagination
-            totalItems={paciente.length}
+            totalItems={filteredPacientes.length}
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
         </div>
+
       )}
     </div>
   );

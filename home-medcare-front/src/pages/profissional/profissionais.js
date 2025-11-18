@@ -7,6 +7,7 @@ import Edit from "../../components/ui/buttons/edit";
 import Delete from "../../components/ui/buttons/delete";
 import SaveForm from "../../components/ui/buttons/saveForm";
 import Pagination from "../../components/ui/pagination/pagination";
+import SearchBar from "../../components/searchBar/SearchBar";
 
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
 import { maskDocs } from "../../utils/formatFieds/maskDocs";
@@ -66,7 +67,24 @@ const ProfissionaisPage = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProfissionais = profissionais.slice(indexOfFirstItem, indexOfLastItem);
+
+  const [search, setSearch] = useState("");
+
+// Filtragem por nome, documento ou telefone
+const filteredProfissionais = profissionais.filter((p) => {
+  const termo = search.toLowerCase();
+  return (
+    p.nome?.toLowerCase().includes(termo) ||
+    String(p.documento || "").includes(termo) ||
+    String(p.telefone || "").includes(termo)
+  );
+});
+
+// Paginação baseada na lista filtrada
+const currentProfissionais = filteredProfissionais.slice(
+  indexOfFirstItem,
+  indexOfLastItem
+);
 
   const handleSuccess = () => {
     setFormData(initialForm);
@@ -178,6 +196,16 @@ const ProfissionaisPage = () => {
       ) : (
         <div className="table-padrao">
           <h3>Profissionais</h3>
+
+          <SearchBar
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setCurrentPage(1); // sempre volta para a primeira página ao buscar
+            }}
+            onSearch={() => setCurrentPage(1)}
+          />
+
           <table>
             <thead>
               <tr>
