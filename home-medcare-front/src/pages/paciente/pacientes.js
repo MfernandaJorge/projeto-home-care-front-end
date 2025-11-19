@@ -12,6 +12,7 @@ import SearchBar from "../../components/searchBar/SearchBar";
 import { formatDate } from "../../utils/formatFieds/formatDate";
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
 import { maskDocs } from "../../utils/formatFieds/maskDocs";
+import SelectSearch from "../../components/selectSearch/selectSearch";
 
 import { pacienteFields } from "../../configs/fields/pacienteFields";
 import { useState, useEffect } from "react";
@@ -139,19 +140,14 @@ const PacientesPage = () => {
                 <label htmlFor={field.id}>{field.placeholder}</label>
 
                 {field.type === "select" ? (
-                  <select
+                  <SelectSearch
                     id={field.id}
                     name={field.id}
-                    value={formData[field.id] || ""}
+                    value={formData[field.id]}
+                    placeholder={field.placeholder}
+                    options={field.options}
                     onChange={handleChange}
-                  >
-                    <option value="">Selecione...</option>
-                    {field.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 ) : (
                   <input
                     id={field.id}

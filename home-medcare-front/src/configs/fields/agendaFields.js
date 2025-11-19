@@ -18,9 +18,9 @@ export const agendaFields = [
     type: "select", 
     placeholder: "Complexidade do Atendimento",
     options: [
-      { value: "1", label: "Baixa" },
-      { value: "2", label: "Média" },
-      { value: "3", label: "Alta" },
+      { value: "1", label: "Baixa - 30min" },
+      { value: "2", label: "Média - 50min" },
+      { value: "3", label: "Alta - 90min" },
     ]
   },{ 
     id: "descricao", 

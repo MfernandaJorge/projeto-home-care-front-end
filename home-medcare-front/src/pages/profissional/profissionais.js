@@ -11,6 +11,7 @@ import SearchBar from "../../components/searchBar/SearchBar";
 
 import { maskTelefone } from "../../utils/formatFieds/maskPhone";
 import { maskDocs } from "../../utils/formatFieds/maskDocs";
+import SelectSearch from "../../components/selectSearch/selectSearch";
 
 import { profissionalFields } from "../../configs/fields/profissionalFields";
 import { useState, useEffect } from "react";
@@ -139,19 +140,15 @@ const currentProfissionais = filteredProfissionais.slice(
 
                 {/* Renderização condicional: input ou select */}
                 {field.type === "select" ? (
-                  <select
+                  <SelectSearch
                     id={field.id}
                     name={field.id}
-                    value={formData[field.id] || ""}
+                    value={formData[field.id]}
+                    placeholder={field.placeholder}
+                    options={field.options}
                     onChange={handleChange}
-                  >
-                    <option value="">Selecione...</option>
-                    {field.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  />
+
                 ) : (
                   <input
                     id={field.id}

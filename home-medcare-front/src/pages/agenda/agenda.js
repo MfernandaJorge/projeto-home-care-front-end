@@ -9,6 +9,8 @@ import SaveForm from "../../components/ui/buttons/saveForm";
 import Pagination from "../../components/ui/pagination/pagination";
 
 import { formatDate } from "../../utils/formatFieds/formatDate";
+import SelectSearch from "../../components/selectSearch/selectSearch";
+
 import { agendaFields } from "../../configs/fields/agendaFields";
 import { useState, useEffect } from "react";
 import api from "../../services/api";
@@ -55,11 +57,11 @@ const AgendaPage = () => {
   const [availableTimes, setAvailableTimes] = useState([]);
 
   const possibleTimes = [
-    "00:00","00:30","01:00","01:30","02:00","02:30","03:00","03:30","04:00","04:30",
-    "05:00","05:30","06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30",
-    "10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30",
-    "15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30",
-    "20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"
+    "00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00",
+    "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00",
+    "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
+    "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "23:00", "23:30"
   ];
 
   const initialForm = agendaFields.reduce((acc, field) => {
@@ -194,86 +196,44 @@ const AgendaPage = () => {
       {/* FORMULÁRIO COM STEPS */}
       {formPadrao && (
         <>
-          <div className="form-stepper-container">
-            {/* Barra de progresso */}
-            <div className="progress-bar">
-              <div
-                className="progress"
-                style={{ width: `${(currentStep / 5) * 100}%` }}
-              ></div>
-            </div>
-
-            {/* Cabeçalho dos steps */}
-            <div className="steps-header">
-              {[
-                "Profissional",
-                "Data e Hora",
-                "Paciente",
-                "Simulação",
-                "Resumo",
-              ].map((label, index) => (
-                <div
-                  key={index}
-                  className={`step-item ${
-                    index === currentStep - 1 ? "active" : ""
-                  } ${index < currentStep - 1 ? "completed" : ""}`}
-                >
-                  <div className="step-circle">{index + 1}</div>
-                  <span className="step-label">{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* STEP 0 */}
           {currentStep === 0 && (
             <div className="busca-opcoes form-padrao">
               <p>Há preferência por profissional?</p>
               <div className="form-actions">
-                <button
-                  className="btn-avancar"
-                  onClick={() => setCurrentStep(1)}
-                >
+                <button className="btn-avancar" onClick={() => setCurrentStep(1)}>
                   Sim
                 </button>
-                <button
-                  className="btn-avancar"
-                  onClick={() => setCurrentStep(2)}
-                >
+                <button className="btn-avancar" onClick={() => setCurrentStep(2)}>
                   Não
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 1 */}
+          {/* STEP 1: Profissional */}
           {currentStep === 1 && (
             <div className="busca-opcoes form-padrao">
               <p>Escolha um profissional:</p>
-              <select
-                value={selectedProfId}
-                onChange={(e) => setSelectedProfId(e.target.value)}
-              >
-                <option value="">Selecione o profissional</option>
-                {profissionaisOptions.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nome} — {jornadaOptions[p.jornadaId] || ""}
-                  </option>
-                ))}
-              </select>
-
+              <div className="select-wrapper">
+                <SelectSearch
+                  label="Selecione o profissional"
+                  value={selectedProfId}
+                  onChange={(e) => setSelectedProfId(e.target.value)}
+                  options={profissionaisOptions.map((p) => ({
+                    value: p.id, // ID do profissional
+                    label: `${p.nome} — ${jornadaOptions[p.jornadaId] || ""}`,
+                  }))}
+                />
+              </div>
               <div className="form-actions">
-                <button
-                  className="btn-voltar"
-                  onClick={() => setCurrentStep(0)}
-                >
+                <button className="btn-voltar" onClick={() => setCurrentStep(0)}>
                   Voltar
                 </button>
                 <button
                   className="btn-avancar"
                   onClick={() => {
-                    if (!selectedProfId)
-                      return alert("Selecione um profissional.");
+                    if (!selectedProfId) return alert("Selecione um profissional.");
                     setFormData({ ...formData, id_profissional: selectedProfId });
                     setCurrentStep(2);
                   }}
@@ -284,11 +244,10 @@ const AgendaPage = () => {
             </div>
           )}
 
-          {/* STEP 2 */}
+          {/* STEP 2: Data e Hora */}
           {currentStep === 2 && (
             <div className="busca-opcoes form-padrao">
               <p>Escolha a data e o horário:</p>
-
               <input
                 type="date"
                 value={formData.data_agendamento || ""}
@@ -296,7 +255,6 @@ const AgendaPage = () => {
                   setFormData({ ...formData, data_agendamento: e.target.value })
                 }
               />
-
               <select
                 value={formData.hora_agendamento || ""}
                 onChange={(e) =>
@@ -310,50 +268,24 @@ const AgendaPage = () => {
                   </option>
                 ))}
               </select>
-
               <div className="form-actions">
-                <button
-                  className="btn-voltar"
-                  onClick={() => setCurrentStep(1)}
-                >
+                <button className="btn-voltar" onClick={() => setCurrentStep(1)}>
                   Voltar
                 </button>
-
                 <button
                   className="btn-avancar"
                   onClick={() => {
                     const { data_agendamento, hora_agendamento } = formData;
-
                     if (!data_agendamento || !hora_agendamento)
                       return alert("Selecione data e hora.");
 
-                    // Combina data e hora e valida se é anterior ao momento atual
-                    const [year, month, day] = data_agendamento
-                      .split("-")
-                      .map(Number);
-                    const [hour, minute] = hora_agendamento
-                      .split(":")
-                      .map(Number);
-                    const selectedDateTime = new Date(
-                      year,
-                      month - 1,
-                      day,
-                      hour,
-                      minute,
-                      0
-                    );
+                    const [year, month, day] = data_agendamento.split("-").map(Number);
+                    const [hour, minute] = hora_agendamento.split(":").map(Number);
+                    const selectedDateTime = new Date(year, month - 1, day, hour, minute);
 
-                    const now = new Date();
-
-                    if (selectedDateTime < now) {
-                      alert(
-                        "A data e hora selecionadas não podem ser anteriores ao momento atual."
-                      );
-                      setFormData({
-                        ...formData,
-                        data_agendamento: "",
-                        hora_agendamento: "",
-                      });
+                    if (selectedDateTime < new Date()) {
+                      alert("A data e hora selecionadas não podem ser anteriores ao momento atual.");
+                      setFormData({ ...formData, data_agendamento: "", hora_agendamento: "" });
                       return;
                     }
 
@@ -366,38 +298,32 @@ const AgendaPage = () => {
             </div>
           )}
 
-          {/* STEP 3 */}
+          {/* STEP 3: Paciente e Complexidade */}
           {currentStep === 3 && (
             <div className="busca-opcoes form-padrao">
               <p>Escolha o paciente:</p>
-              <select
+              <SelectSearch
+                label="Selecione o paciente"
                 value={formData.id_paciente || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, id_paciente: e.target.value })
-                }
-              >
-                <option value="">Selecione o paciente</option>
-                {pacientesOptions.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nome}
-                  </option>
-                ))}
-              </select>
+                onChange={(e) => setFormData({ ...formData, id_paciente: e.target.value })}
+                options={pacientesOptions.map((p) => ({
+                  value: p.id, // ID do paciente
+                  label: p.nome,
+                }))}
+              />
 
-              <select
-                name="complexidade"
+              <p>Escolha complexidade do atendimento:</p>
+              <SelectSearch
+                label="Selecione a complexidade"
                 value={formData.complexidade || ""}
-                onChange={handleChange}
-              >
-                <option value="">Selecione a complexidade</option>
-                {agendaFields
+                onChange={(e) => setFormData({ ...formData, complexidade: e.target.value })}
+                options={agendaFields
                   .find((f) => f.id === "complexidade")
-                  ?.options?.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                ))}
-              </select>
+                  ?.options?.map((o) => ({
+                    value: o.value,
+                    label: o.label,
+                  }))}
+              />
 
               <div className="form-actions">
                 <button className="btn-voltar" onClick={() => setCurrentStep(2)}>
@@ -406,10 +332,8 @@ const AgendaPage = () => {
                 <button
                   className="btn-avancar"
                   onClick={() => {
-                    if (!formData.id_paciente)
-                      return alert("Selecione um paciente.");
-                    if (!formData.complexidade)
-                      return alert("Selecione a complexidade.");
+                    if (!formData.id_paciente) return alert("Selecione um paciente.");
+                    if (!formData.complexidade) return alert("Selecione a complexidade.");
 
                     fetchSimulatedTimes();
                     setCurrentStep(4);
@@ -421,24 +345,19 @@ const AgendaPage = () => {
             </div>
           )}
 
-          {/* STEP 4 */}
+          {/* STEP 4: Simulação */}
           {currentStep === 4 && (
             <div className="busca-opcoes form-padrao">
               <p>Selecione uma opção simulada:</p>
-              <select
+              <SelectSearch
+                label="Selecione uma opção"
+                value={selectedSimulatedTime || ""}
                 onChange={(e) => setSelectedSimulatedTime(e.target.value)}
-                value={selectedSimulatedTime}
-              >
-                <option value="">Selecione uma opção</option>
-                {simulatedTimes.map((s) => (
-                  <option
-                    key={`${s.profissional}-${s.data}-${s.horaInicio}`}
-                    value={s.horaInicio}
-                  >
-                    {`${s.profissional}, ${s.horaInicio}, ${formatDate(s.data)}`}
-                  </option>
-                ))}
-              </select>
+                options={simulatedTimes.map((s, index) => ({
+                  value: `${s.profissionalId}-${s.horaInicio}-${index}`, // combina IDs + índice para garantir unicidade
+                  label: `${s.profissional}, ${s.horaInicio}, ${formatDate(s.data)}`,
+                }))}
+              />
 
               <div className="form-actions">
                 <button className="btn-voltar" onClick={() => setCurrentStep(3)}>
@@ -447,16 +366,16 @@ const AgendaPage = () => {
                 <button
                   className="btn-avancar"
                   onClick={() => {
-                    if (!selectedSimulatedTime)
-                      return alert("Selecione um horário.");
+                    if (!selectedSimulatedTime) return alert("Selecione um horário.");
+                    const [profissionalId, horaInicio] = selectedSimulatedTime.split("-");
                     const sim = simulatedTimes.find(
-                      (s) => s.horaInicio === selectedSimulatedTime
+                      (s) => s.profissionalId.toString() === profissionalId && s.horaInicio === horaInicio
                     );
                     setFormData({
                       ...formData,
                       data_agendamento: sim?.data,
-                      hora_agendamento: selectedSimulatedTime,
-                      id_profissional: sim?.profissionalId || formData.id_profissional,
+                      hora_agendamento: sim?.horaInicio,
+                      id_profissional: sim?.profissionalId,
                     });
                     setCurrentStep(5);
                   }}
@@ -467,64 +386,53 @@ const AgendaPage = () => {
             </div>
           )}
 
-          {/* STEP 5 */}
+          {/* STEP 5: Confirmação */}
           {currentStep === 5 && (
             <form className="busca-opcoes form-padrao">
               {camposAgenda
-                .filter((field) =>
-                  ["descricao", "status_agendamento"].includes(field.id)
-                )
-                .map((field) => {
-                  if (field.type === "select") {
-                    return (
+                .filter((field) => ["descricao", "status_agendamento"].includes(field.id))
+                .map((field) => (
+                  <div key={field.id} className="form-field">
+                    <p>{field.placeholder}</p>
+                    {field.type === "select" ? (
                       <select
-                        key={field.id}
                         name={field.id}
                         value={formData[field.id] || ""}
                         onChange={handleChange}
                       >
                         <option value="">{field.placeholder}</option>
-                        {field.options?.map((o) => (
-                          <option key={o.value} value={o.value}>
+                        {field.options?.map((o, index) => (
+                          <option key={`${o.value}-${index}`} value={o.value}>
                             {o.label}
                           </option>
                         ))}
                       </select>
-                    );
-                  }
-                  return (
-                    <input
-                      key={field.id}
-                      type={field.type}
-                      name={field.id}
-                      placeholder={field.placeholder}
-                      value={formData[field.id] || ""}
-                      onChange={handleChange}
-                    />
-                  );
-                })}
+                    ) : (
+                      <input
+                        type={field.type}
+                        name={field.id}
+                        placeholder={field.placeholder}
+                        value={formData[field.id] || ""}
+                        onChange={handleChange}
+                      />
+                    )}
+                  </div>
+                ))}
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-voltar"
-                  onClick={() => setCurrentStep(4)}
-                >
+                <button type="button" className="btn-voltar" onClick={() => setCurrentStep(4)}>
                   Voltar
                 </button>
+
                 <SaveForm
-                  endpoint={
-                    editMode ? `agenda/update/${editId}` : "/agendamento/agendar"
-                  }
+                  endpoint={editMode ? `agenda/update/${editId}` : "/agendamento/agendar"}
                   data={{
                     ...formData,
                     pacienteId: Number(formData.id_paciente),
-                    profissionalId: formData.id_profissional
-                      ? Number(formData.id_profissional)
-                      : null,
+                    profissionalId: Number(formData.id_profissional),
                     tipoAtendimento: Number(formData.complexidade),
                     diaDesejado: formData.data_agendamento,
-                    horaDesejada: formData.hora_agendamento
+                    horaDesejada: formData.hora_agendamento,
                   }}
                   onSuccess={() => {
                     handleSuccess();
@@ -536,6 +444,7 @@ const AgendaPage = () => {
               </div>
             </form>
           )}
+
         </>
       )}
 
