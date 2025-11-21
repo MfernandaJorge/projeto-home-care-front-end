@@ -35,7 +35,7 @@ const PacientesPage = () => {
     const { name, value } = e.target;
 
     if (name === "telefone") {
-      const digits = String(value).replace(/\D/g, "").slice(0, 9);
+      const digits = String(value).replace(/\D/g, "").slice(0, 11);
       setFormData({ ...formData, [name]: digits });
       return;
     }
